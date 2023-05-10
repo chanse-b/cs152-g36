@@ -125,7 +125,6 @@ class ModBot(discord.Client):
         shown in the mod channel. 
         '''
         return "Evaluated: '" + text+ "'"
-
-
+    
 client = ModBot()
 client.run(discord_token)
