@@ -7,6 +7,7 @@ class State(Enum):
     AWAITING_MESSAGE = auto()
     MESSAGE_IDENTIFIED = auto()
     REPORT_COMPLETE = auto()
+    DANGER_REPORT = auto()
 
 
 class Report:
@@ -33,6 +34,7 @@ class Report:
         get you started and give you a model for working with Discord. 
         '''
         message.content = message.content.lower()
+        print(message.content)
         if message.content == self.CANCEL_KEYWORD:
             self.state = State.REPORT_COMPLETE
             return ["Report cancelled."]
@@ -78,10 +80,25 @@ class Report:
             self.state = State.MESSAGE_IDENTIFIED
             return [reply+"<insert rest of reporting flow here>"]
     
-        if message.content not in self.AbuseTypes:
+        if message.content not in self.AbuseTypes and self.state == State.MESSAGE_IDENTIFIED:
             return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel"]
+        if message.content == self.IMMINENT_DANGER and self.state == State.MESSAGE_IDENTIFIED:
+            self.state = State.DANGER_REPORT
+            reply = "You have indicated someone is in imminent danger. If your safety is in jeopardy, it is recommended that you call 911 \n\n"
+            reply += "please tell us more about the situation using the following options: \n"
+            reply += "School Threat \n"
+            reply += "Personal Threat \n"
+            reply += "Public Threat \n"
+            return [reply]
+        if 'threat' in message.content.lower():
+            self.state = State.REPORT_COMPLETE
+            return ["Thank you for your report. It has been successfully received and will be reviewed by our content moderation team\n" 
+                    + "If you have reason to believe that someone is in grave danger, please contact 911."]
+        
+            
     def report_complete(self):
         return self.state == State.REPORT_COMPLETE
+        
     
 
 
