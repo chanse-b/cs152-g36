@@ -8,10 +8,18 @@ class State(Enum):
     MESSAGE_IDENTIFIED = auto()
     REPORT_COMPLETE = auto()
 
+
 class Report:
     START_KEYWORD = "report"
     CANCEL_KEYWORD = "cancel"
     HELP_KEYWORD = "help"
+    PROCEED_KEYWORD = "continue"
+    
+    IMMINENT_DANGER = "imminent danger"
+    OFFENSIVE_CONTENT = "offensive content"
+    HARASSMENT = "harassment"
+    AbuseTypes = [IMMINENT_DANGER, OFFENSIVE_CONTENT, HARASSMENT]
+
 
     def __init__(self, client):
         self.state = State.REPORT_START
@@ -56,13 +64,22 @@ class Report:
             # Here we've found the message - it's up to you to decide what to do next!
             self.state = State.MESSAGE_IDENTIFIED
             return ["I found this message:", "```" + message.author.name + ": " + message.content + "```", \
-                    "This is all I know how to do right now - it's up to you to build out the rest of my reporting flow!"]
-        
-        if self.state == State.MESSAGE_IDENTIFIED:
-            return ["<insert rest of reporting flow here>"]
-
-        return []
-
+                    "Enter 'continue' to continue reporting, or 'cancel' to cancel"]
+            
+        if message.content == self.CANCEL_KEYWORD:
+            self.state = State.REPORT_COMPLETE
+            return ["Report cancelled."]
+            
+        if message.content == self.PROCEED_KEYWORD:
+            reply = "Please select the reason for reporting this message. Say `help` at any time for more information.\n\n"
+            reply += "Imminent Danger\n"
+            reply += "Harassment\n"
+            reply += "Offensive Content \n"
+            self.state = State.MESSAGE_IDENTIFIED
+            return [reply+"<insert rest of reporting flow here>"]
+    
+        if message.content not in self.AbuseTypes:
+            return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel"]
     def report_complete(self):
         return self.state == State.REPORT_COMPLETE
     
