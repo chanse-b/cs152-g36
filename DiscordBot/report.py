@@ -13,6 +13,7 @@ class State(Enum):
     SPAM_REPORT = auto()
     HARRASSMENT_REPORT = auto()
     OFFENSIVE_REPORT = auto()
+    BLOCK_USER = auto()
 
 
 class Report:
