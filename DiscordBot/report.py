@@ -1,6 +1,8 @@
 from enum import Enum, auto
 import discord
 import re
+from langdetect import detect
+from deep_translator import GoogleTranslator as GoogleTranslate
 
 class State(Enum):
     REPORT_START = auto()
@@ -64,9 +66,12 @@ class Report:
                 return ["It seems this message was deleted or never existed. Please try again or say `cancel` to cancel."]
 
             # Here we've found the message - it's up to you to decide what to do next!
-            self.state = State.MESSAGE_IDENTIFIED
-            return ["I found this message:", "```" + message.author.name + ": " + message.content + "```", \
+            self.state = State.MESSAGE_IDENTIFIED 
+            reply = []
+            reply += ["I will translate the message into English if necessrary"]
+            reply += ["I found this message:", "```" + message.author.name + ": " + GoogleTranslate(source='auto', target='english').translate(message.content) + "```", \
                     "Enter 'continue' to continue reporting, or 'cancel' to cancel"]
+            return reply
             
         if message.content == self.CANCEL_KEYWORD:
             self.state = State.REPORT_COMPLETE
@@ -90,8 +95,10 @@ class Report:
             reply += "Personal Threat \n"
             reply += "Public Threat \n"
             return [reply]
-        if 'threat' in message.content.lower():
+        if ('school' or 'public') and ('threat') in message.content.lower():
             self.state = State.REPORT_COMPLETE
+            ## route message to authorities
+            
             return ["Thank you for your report. It has been successfully received and will be reviewed by our content moderation team\n" 
                     + "If you have reason to believe that someone is in grave danger, please contact 911."]
         
