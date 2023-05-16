@@ -1,11 +1,12 @@
 # bot.py
 # TODO:
-# escalate context to moderator
+# escalate comment to moderator and show its history
+# how to see past edits of a message discord.on_raw_message_edit^
+
 # forward message to an authorities channel
 # How to simulate banning a user
 # how to simulate blocking a user
 # How can a moderator delete a post
-# how to see past edits of a message discord.on_raw_message_edit
 # offer translation instead of doing it----DONE
 import discord
 from discord.ext import commands
@@ -26,7 +27,7 @@ handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(me
 logger.addHandler(handler)
 
 # There should be a file called 'tokens.json' inside the same folder as this file
-token_path = 'tokens.json'
+token_path = 'DiscordBot/tokens.json'
 if not os.path.isfile(token_path):
     raise Exception(f"{token_path} not found!")
 with open(token_path) as f:
@@ -76,7 +77,6 @@ class ModBot(discord.Client):
         # Check if this message was sent in a server ("guild") or if it's a DM
         if message.guild:
             await self.handle_channel_message(message)
-            # some random comment
         else:
             await self.handle_dm(message)
 
@@ -110,15 +110,19 @@ class ModBot(discord.Client):
             self.reports.pop(author_id)
 
     async def handle_channel_message(self, message):
-        # Only handle messages sent in the "group-#" channel
+        # Only handle messages sent in the "group-36" channel
         if not message.channel.name == f'group-{self.group_num}':
             return
 
-        # Forward the message to the mod channel
+        # Forward the message to the mod channel **CURRENTLY FORWARDS ALL MESSAGES FROM GROUP 36 TO MOD CHAT.
+        # MODIFY TO SEND FLAGGED OR REPORTED MESSAGES ONLY 
+        # NEED TO INCLUDE CONTEXT REPORT AS WELL AND EDIT HISTORY
+       
         mod_channel = self.mod_channels[message.guild.id]
         await mod_channel.send(f'Forwarded message:\n{message.author.name}: "{message.content}"')
         scores = self.eval_text(message.content)
         await mod_channel.send(self.code_format(scores))
+        await mod_channel.send("hello this is a test message")
         
     
         

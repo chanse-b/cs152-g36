@@ -97,7 +97,7 @@ class Report:
             reply += "Offensive Content \n"
             reply += "Imminent Danger \n"
             return [reply]
-        
+                
         if message.content.lower() == 'more info' and self.state == State.MESSAGE_IDENTIFIED:
             reply = "Here's some more information to what the classifcations mean: \n\n"
             reply += "Spam: Any unwanted, unsolicited communcation\n"
