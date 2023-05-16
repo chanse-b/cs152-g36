@@ -7,13 +7,13 @@ class State(Enum):
     REPORT_START = auto()
     AWAITING_MESSAGE = auto()
     MESSAGE_IDENTIFIED = auto()
+    AWAITING_CONTEXT = auto()
     REPORT_COMPLETE = auto()
     DANGER_REPORT = auto()
     SPAM_REPORT = auto()
     HARRASSMENT_REPORT = auto()
     OFFENSIVE_REPORT = auto()
-    BLOCK_USER = auto()
-
+    AWAITING_BLOCK_DECISION = auto()
 
 class Report:
     START_KEYWORD = "report"
@@ -26,6 +26,10 @@ class Report:
     HARASSMENT = "harassment"
     SPAM = "spam"
     AbuseTypes = [IMMINENT_DANGER, OFFENSIVE_CONTENT, HARASSMENT, SPAM]
+    offensive_bins = ["personally-targeted content", "hate speech", "explicit content", "graphic content", "encouragement of violence"]
+    harrasment_bins = ["stalking", "impersonation", "doxxing", "unwanted sexual content", "trolling"]
+    spam_bins = ["solicitation","fruad", "phishing", "propaganda"]
+    bins = offensive_bins + spam_bins + harrasment_bins
 
 
     def __init__(self, client):
@@ -40,7 +44,9 @@ class Report:
         get you started and give you a model for working with Discord. 
         '''
         message.content = message.content.lower()
-        threat_type = ""
+        context = None
+        print(self.bins)
+        print(self.offensive_bins)
         print(message.content)
         if message.content == self.CANCEL_KEYWORD:
             self.state = State.REPORT_COMPLETE
@@ -88,7 +94,6 @@ class Report:
             reply += "Harassment\n"
             reply += "Offensive Content \n"
             reply += "Imminent Danger \n"
-            self.state = State.MESSAGE_IDENTIFIED
             return [reply]
         
         if message.content.lower() == 'more info' and self.state == State.MESSAGE_IDENTIFIED:
@@ -99,7 +104,7 @@ class Report:
             reply += "Imminent Danger: Somone or a group of persons who's life may be in danger now or in future.\n"
             return [reply]
         elif message.content not in self.AbuseTypes and self.state == State.MESSAGE_IDENTIFIED:
-            return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel"]
+            return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel 1"]
         
         if message.content == self.IMMINENT_DANGER and self.state == State.MESSAGE_IDENTIFIED:
             self.state = State.DANGER_REPORT
@@ -131,8 +136,8 @@ class Report:
             reply += "Fraud and/or Phishing: wrongful or criminal deception intended to result in financial or personal gain. \n"
             reply += "Propaganda : the dissemination of information—facts, arguments, rumours, half-truths, or lies—to influence public opinion \n"
             return [reply]
-        elif self.state == State.SPAM_REPORT:
-            return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel"]
+        elif self.state == State.SPAM_REPORT and message.content not in self.bins:
+            return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel 2"]
         
         if message.content == self.HARASSMENT and self.state == State.MESSAGE_IDENTIFIED:
             self.state = State.HARRASSMENT_REPORT
@@ -151,8 +156,8 @@ class Report:
             reply += "Impersonation: Somone pretending to be you or someone else\n"
             reply += "Doxxing: search for and publish private or identifying information about (a particular individual) on the internet, typically with malicious intent. \n"
             return [reply]
-        elif self.state == State.HARRASSMENT_REPORT:
-            return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel"]
+        elif self.state == State.HARRASSMENT_REPORT and message.content not in self.bins:
+            return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel 3"]
         
         if message.content == self.OFFENSIVE_CONTENT and self.state == State.MESSAGE_IDENTIFIED:
             self.state = State.OFFENSIVE_REPORT
@@ -173,9 +178,29 @@ class Report:
             reply += "Personally-Targeted content: <>\n"
             reply += "Encouragement of Violence: Somone encouraging violance toward an individual, group of people, or other entity\n"
             return [reply]
-        elif self.state == State.OFFENSIVE_REPORT:
-            return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel"]
+        elif self.state == State.OFFENSIVE_REPORT and message.content not in self.bins:
+            return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel 4"]
         
+        if (self.state == State.OFFENSIVE_REPORT or self.state == State.HARRASSMENT_REPORT or self.state == State.SPAM_REPORT) and message.content.lower() in self.bins:
+            self.state = State.AWAITING_CONTEXT 
+            return ["Please include more details describing the context behind this comment."]
+        
+        if self.state == State.AWAITING_CONTEXT:
+            context = message.content
+            # send context to the backend
+            reply = "Thank you for reporting this. It will now be reviewed by our moderation team. We will be in touch if we require additional information.\n"
+            reply += "Do you want to block this user?"
+            self.state = State.AWAITING_BLOCK_DECISION
+            return [reply]
+        
+        if self.state == State.AWAITING_BLOCK_DECISION and message.content.lower() == "yes":
+            pass 
+            return ["user has been blocked"]
+        elif self.state == State.AWAITING_BLOCK_DECISION and message.content.lower() == "no":
+            pass
+            return ["user has not been blocked"]
+        else:
+            return ["sorry, I'm afraid I didn't get that. Can you please try again?"]
         
         if self.state == State.DANGER_REPORT and "threat" in message.content.lower() and ("school" or "public") in message.content.lower():
             self.state = State.REPORT_COMPLETE
@@ -188,7 +213,7 @@ class Report:
             reply = "Thank you for your report. It has been successfully received and will be reviewed by our content moderation team\n" 
             reply += "If you have reason to believe that someone is in grave danger, please contact 911."
         elif self.state == State.DANGER_REPORT:
-            return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel"]
+            return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel 5"]
         if self.state == State.REPORT_COMPLETE:
             return self.state == State.REPORT_COMPLETE
         
