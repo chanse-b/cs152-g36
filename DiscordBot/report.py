@@ -10,6 +10,9 @@ class State(Enum):
     MESSAGE_IDENTIFIED = auto()
     REPORT_COMPLETE = auto()
     DANGER_REPORT = auto()
+    SPAM_REPORT = auto()
+    HARRASSMENT_REPORT = auto()
+    OFFENSIVE_REPORT = auto()
 
 
 class Report:
@@ -21,7 +24,8 @@ class Report:
     IMMINENT_DANGER = "imminent danger"
     OFFENSIVE_CONTENT = "offensive content"
     HARASSMENT = "harassment"
-    AbuseTypes = [IMMINENT_DANGER, OFFENSIVE_CONTENT, HARASSMENT]
+    SPAM = "spam"
+    AbuseTypes = [IMMINENT_DANGER, OFFENSIVE_CONTENT, HARASSMENT, SPAM]
 
 
     def __init__(self, client):
@@ -79,9 +83,10 @@ class Report:
             
         if message.content == self.PROCEED_KEYWORD:
             reply = "Please select the reason for reporting this message. Say `help` at any time for more information.\n\n"
-            reply += "Imminent Danger\n"
+            reply += "Spam\n"
             reply += "Harassment\n"
             reply += "Offensive Content \n"
+            reply += "Imminent Danger \n"
             self.state = State.MESSAGE_IDENTIFIED
             return [reply+"<insert rest of reporting flow here>"]
     
@@ -90,19 +95,49 @@ class Report:
         if message.content == self.IMMINENT_DANGER and self.state == State.MESSAGE_IDENTIFIED:
             self.state = State.DANGER_REPORT
             reply = "You have indicated someone is in imminent danger. If your safety is in jeopardy, it is recommended that you call 911 \n\n"
-            reply += "please tell us more about the situation using the following options: \n"
+            reply += "please tell me more about the situation using the following options: \n"
             reply += "School Threat \n"
             reply += "Personal Threat \n"
             reply += "Public Threat \n"
             return [reply]
-        if ('school' or 'public') and ('threat') in message.content.lower():
+        elif message.content == self.SPAM and self.state == State.MESSAGE_IDENTIFIED:
+            self.state = State.SPAM_REPORT
+            reply = "You have indicated this message is spam \n\n"
+            reply += "please tell me more about the situation using the following options: \n"
+            reply += "I think this is a bot \n"
+            reply += "Trying to sell me something \n"
+            return [reply]
+        elif message.content == self.HARASSMENT and self.state == State.MESSAGE_IDENTIFIED:
+            self.state = State.HARRASSMENT_REPORT
+            reply = "You have indicated this message is harassment \n\n"
+            reply += "please tell me more about the situation using the following options: \n"
+            reply += "Unwanted Sexual Content \n"
+            reply += "blah \n"
+            reply += "blah blah \n"
+            return [reply]
+        elif message.content == self.OFFENSIVE_CONTENT and self.state == State.MESSAGE_IDENTIFIED:
+            self.state = State.OFFENSIVE_REPORT
+            reply = "You have indicated this message is offensive \n\n"
+            reply += "please tell me more about the situation using the following options: \n"
+            reply += "Hate Speech \n"
+            reply += "Explicit Content \n"
+            reply += "blah blah \n"
+            return [reply]
+        if self.state == State.DANGER_REPORT and "threat" in message.content.lower() and ("school" or "public") in message.content.lower():
             self.state = State.REPORT_COMPLETE
+            reply = []
             ## route message to authorities
-            
+            if "school" or "public" in message.content: reply += ["WILL SEND TO LOCAL AUTHORITIES \n"]
+            reply += ["Thank you for your report. It has been successfully received and will be reviewed by our content moderation team\n" 
+                    + "If you have reason to believe that someone is in grave danger, please contact 911."]
+            return [reply]
+        elif self.state == State.DANGER_REPORT and "threat" in message.content.lower():
+            self.state = State.REPORT_COMPLETE
             return ["Thank you for your report. It has been successfully received and will be reviewed by our content moderation team\n" 
                     + "If you have reason to believe that someone is in grave danger, please contact 911."]
+        if self.state == State.REPORT_COMPLETE:
+            return self.state == State.REPORT_COMPLETE
         
-            
     def report_complete(self):
         return self.state == State.REPORT_COMPLETE
         
