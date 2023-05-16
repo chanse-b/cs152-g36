@@ -195,11 +195,13 @@ class Report:
         
         if self.state == State.AWAITING_BLOCK_DECISION and message.content.lower() == "yes":
             pass 
+            self.state = State.REPORT_COMPLETE
             return ["user has been blocked"]
         elif self.state == State.AWAITING_BLOCK_DECISION and message.content.lower() == "no":
             pass
+            self.state = State.REPORT_COMPLETE
             return ["user has not been blocked"]
-        else:
+        elif self.state == State.AWAITING_BLOCK_DECISION:
             return ["sorry, I'm afraid I didn't get that. Can you please try again?"]
         
         if self.state == State.DANGER_REPORT and "threat" in message.content.lower() and ("school" or "public") in message.content.lower():
