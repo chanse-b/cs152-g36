@@ -1,7 +1,6 @@
 from enum import Enum, auto
 import discord
 import re
-from langdetect import detect
 from deep_translator import GoogleTranslator as GoogleTranslate
 
 class State(Enum):
@@ -41,6 +40,7 @@ class Report:
         get you started and give you a model for working with Discord. 
         '''
         message.content = message.content.lower()
+        threat_type = ""
         print(message.content)
         if message.content == self.CANCEL_KEYWORD:
             self.state = State.REPORT_COMPLETE
@@ -49,7 +49,7 @@ class Report:
         if self.state == State.REPORT_START:
             reply =  "Thank you for starting the reporting process. "
             reply += "Say `help` at any time for more information.\n\n"
-            reply += "Please copy paste the link to the message you want to report.\n"
+            reply += "To start, please copy and paste the link to the message you want to report.\n"
             reply += "You can obtain this link by right-clicking the message and clicking `Copy Message Link`."
             self.state = State.AWAITING_MESSAGE
             return [reply]
@@ -82,60 +82,113 @@ class Report:
             self.state = State.REPORT_COMPLETE
             return ["Report cancelled."]
             
-        if message.content == self.PROCEED_KEYWORD:
-            reply = "Please select the reason for reporting this message. Say `help` at any time for more information.\n\n"
+        if message.content == self.PROCEED_KEYWORD and self.state == State.MESSAGE_IDENTIFIED:
+            reply = "Please select a classification for this message. Say 'more info' for more information\n\n"
             reply += "Spam\n"
             reply += "Harassment\n"
             reply += "Offensive Content \n"
             reply += "Imminent Danger \n"
             self.state = State.MESSAGE_IDENTIFIED
-            return [reply+"<insert rest of reporting flow here>"]
-    
-        if message.content not in self.AbuseTypes and self.state == State.MESSAGE_IDENTIFIED:
+            return [reply]
+        
+        if message.content.lower() == 'more info' and self.state == State.MESSAGE_IDENTIFIED:
+            reply = "Here's some more information to what the classifcations mean: \n\n"
+            reply += "Spam: Any unwanted, unsolicited communcation\n"
+            reply += "Harassment: a repeated pattern of behavior intended to scare, harm, anger, or shame a targeted individual \n"
+            reply += "Offensive Content: Content that is defamitory, obscene, pornographic, gratuitously violenent or causes another person to be offended, scared, or worried.\n"
+            reply += "Imminent Danger: Somone or a group of persons who's life may be in danger now or in future.\n"
+            return [reply]
+        elif message.content not in self.AbuseTypes and self.state == State.MESSAGE_IDENTIFIED:
             return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel"]
+        
         if message.content == self.IMMINENT_DANGER and self.state == State.MESSAGE_IDENTIFIED:
             self.state = State.DANGER_REPORT
             reply = "You have indicated someone is in imminent danger. If your safety is in jeopardy, it is recommended that you call 911 \n\n"
-            reply += "please tell me more about the situation using the following options: \n"
+            reply += "please tell me more about the situation using the following options:  \n"
             reply += "School Threat \n"
             reply += "Personal Threat \n"
-            reply += "Public Threat \n"
+            reply += "Public Threat \n\n"
+            reply += "Or say 'more info' for more information"
             return [reply]
-        elif message.content == self.SPAM and self.state == State.MESSAGE_IDENTIFIED:
+        if message.content == 'more info' and self.state == State.DANGER_REPORT:
+            reply = "Here's some more information to what these types of threats are: \n\n"
+            reply += "School Threat: A threat against a public, private, or secondary school \n"
+            reply += "Personal Threat: a threat against you or someone else \n"
+            reply += "Public Threat: a threat against an institution or against a group of people \n"
+        
+        if message.content == self.SPAM and self.state == State.MESSAGE_IDENTIFIED:
             self.state = State.SPAM_REPORT
-            reply = "You have indicated this message is spam \n\n"
-            reply += "please tell me more about the situation using the following options: \n"
-            reply += "I think this is a bot \n"
-            reply += "Trying to sell me something \n"
+            reply = "You have indicated this message is spam \n"
+            reply += "please tell me more about the situation using the following options: \n\n"
+            reply += "Solicitation \n"
+            reply += "Fraud and/or Phishing \n"
+            reply += "Propaganda \n\n"
+            reply += "Or say 'more info' for more information"
             return [reply]
-        elif message.content == self.HARASSMENT and self.state == State.MESSAGE_IDENTIFIED:
+        if message.content == 'more info' and self.state == State.SPAM_REPORT:
+            reply = "Here's some more information to what these types of spam are: \n\n"
+            reply += "Solicitation: the offense of offering money to someone with the specific intent of inducing that person to commit a crime \n"
+            reply += "Fraud and/or Phishing: wrongful or criminal deception intended to result in financial or personal gain. \n"
+            reply += "Propaganda : the dissemination of information—facts, arguments, rumours, half-truths, or lies—to influence public opinion \n"
+            return [reply]
+        elif self.state == State.SPAM_REPORT:
+            return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel"]
+        
+        if message.content == self.HARASSMENT and self.state == State.MESSAGE_IDENTIFIED:
             self.state = State.HARRASSMENT_REPORT
-            reply = "You have indicated this message is harassment \n\n"
-            reply += "please tell me more about the situation using the following options: \n"
+            reply = "You have indicated this message is harassment \n"
+            reply += "please tell me more about the situation using the following options: \n\n"
             reply += "Unwanted Sexual Content \n"
-            reply += "blah \n"
-            reply += "blah blah \n"
+            reply += "Stalking \n"
+            reply += "Impersonation \n"
+            reply += "Doxxing \n\n"
+            reply += "Or say 'more info' for more information"
             return [reply]
-        elif message.content == self.OFFENSIVE_CONTENT and self.state == State.MESSAGE_IDENTIFIED:
+        if message.content == 'more info' and self.state == State.HARRASSMENT_REPORT:
+            reply = "Here's some more information to what these types of spam are: \n\n"
+            reply += "Unwanted Sexual Content: Can inclucde being sent or shown naked or semi-naked images (nudes), receiving sexual messages, or being sent links to sexual videos\n"
+            reply += "Stalking: the crime of illegally following and watching someone over a period of time\n"
+            reply += "Impersonation: Somone pretending to be you or someone else\n"
+            reply += "Doxxing: search for and publish private or identifying information about (a particular individual) on the internet, typically with malicious intent. \n"
+            return [reply]
+        elif self.state == State.HARRASSMENT_REPORT:
+            return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel"]
+        
+        if message.content == self.OFFENSIVE_CONTENT and self.state == State.MESSAGE_IDENTIFIED:
             self.state = State.OFFENSIVE_REPORT
             reply = "You have indicated this message is offensive \n\n"
             reply += "please tell me more about the situation using the following options: \n"
             reply += "Hate Speech \n"
             reply += "Explicit Content \n"
-            reply += "blah blah \n"
+            reply += "Graphic content \n"
+            reply += "Personally-Targeted content\n"
+            reply += "Encouragement of Violence\n\n"
+            reply += "Or say 'more info' for more information"
             return [reply]
+        if message.content == 'more info' and self.state == State.OFFENSIVE_REPORT:
+            reply = "Here's some more information to what these types of spam are: \n\n"
+            reply += "Hate Speech: Abusive or threatening speech or writing that expresses prejudice on the basis of ethnicity, religion, sexual orientation, or similar grounds. \n"
+            reply += "Explicit Content: <Need a definition here> \n"
+            reply += "Graphic content: Any type of visual material that is considered disturbing, offensive, or inappropriate\n"
+            reply += "Personally-Targeted content: <>\n"
+            reply += "Encouragement of Violence: Somone encouraging violance toward an individual, group of people, or other entity\n"
+            return [reply]
+        elif self.state == State.OFFENSIVE_REPORT:
+            return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel"]
+        
+        
         if self.state == State.DANGER_REPORT and "threat" in message.content.lower() and ("school" or "public") in message.content.lower():
             self.state = State.REPORT_COMPLETE
-            reply = []
             ## route message to authorities
-            if "school" or "public" in message.content.lower(): reply += ["WILL SEND TO LOCAL AUTHORITIES \n"]
-            reply += ["Thank you for your report. It has been successfully received and will be reviewed by our content moderation team\n" 
-                    + "If you have reason to believe that someone is in grave danger, please contact 911."]
+            reply = "Thank you for your report. It has been successfully received and will be reviewed by our content moderation team and sent to local authorities\n" 
+            reply += "If you have reason to believe that someone is in grave danger, please contact 911."
             return [reply]
         elif self.state == State.DANGER_REPORT and "threat" in message.content.lower():
             self.state = State.REPORT_COMPLETE
-            return ["Thank you for your report. It has been successfully received and will be reviewed by our content moderation team\n" 
-                    + "If you have reason to believe that someone is in grave danger, please contact 911."]
+            reply = "Thank you for your report. It has been successfully received and will be reviewed by our content moderation team\n" 
+            reply += "If you have reason to believe that someone is in grave danger, please contact 911."
+        elif self.state == State.DANGER_REPORT:
+            return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel"]
         if self.state == State.REPORT_COMPLETE:
             return self.state == State.REPORT_COMPLETE
         
