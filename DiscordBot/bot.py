@@ -1,13 +1,21 @@
 # bot.py
-# 
+# TODO:
+# escalate context to moderator
+# forward message to an authorities channel
+# How to simulate banning a user
+# how to simulate blocking a user
+# How can a moderator delete a post
+# how to see past edits of a message discord.on_raw_message_edit
+# offer translation instead of doing it----DONE
 import discord
 from discord.ext import commands
 import os
 import json
 import logging
 import re
-import requests
+import requests #for google vm
 from report import Report
+from report import context
 import pdb
 
 # Set up logging to the console
@@ -111,9 +119,9 @@ class ModBot(discord.Client):
         await mod_channel.send(f'Forwarded message:\n{message.author.name}: "{message.content}"')
         scores = self.eval_text(message.content)
         await mod_channel.send(self.code_format(scores))
-       
-
+        
     
+        
     def eval_text(self, message):
         ''''
         TODO: Once you know how you want to evaluate messages in your channel, 
