@@ -127,7 +127,7 @@ class Report:
             self.state = State.REPORT_COMPLETE
             reply = []
             ## route message to authorities
-            if "school" or "public" in message.content: reply += ["WILL SEND TO LOCAL AUTHORITIES \n"]
+            if "school" or "public" in message.content.lower(): reply += ["WILL SEND TO LOCAL AUTHORITIES \n"]
             reply += ["Thank you for your report. It has been successfully received and will be reviewed by our content moderation team\n" 
                     + "If you have reason to believe that someone is in grave danger, please contact 911."]
             return [reply]
