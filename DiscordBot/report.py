@@ -22,6 +22,7 @@ class Report:
     HELP_KEYWORD = "help"
     PROCEED_KEYWORD = "continue"
     reported_message = None
+    message_link = None
     
     
     context = None
@@ -68,6 +69,7 @@ class Report:
         
         if self.state == State.AWAITING_MESSAGE:
             # Parse out the three ID strings from the message link
+            Report.message_link = message.content 
             m = re.search('/(\d+)/(\d+)/(\d+)', message.content)
             if not m:
                 return ["I'm sorry, I couldn't read that link. Please try again or say `cancel` to cancel."]
@@ -194,7 +196,7 @@ class Report:
         
         if (self.state == State.OFFENSIVE_REPORT or self.state == State.HARRASSMENT_REPORT or self.state == State.SPAM_REPORT) and message.content.lower() in self.bins:
             self.state = State.AWAITING_CONTEXT 
-            Report.tags += message.content + ","
+            Report.tags += message.content
             return ["Please include more details describing the context behind this comment."]
         
         if self.state == State.AWAITING_CONTEXT:

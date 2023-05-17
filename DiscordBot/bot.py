@@ -2,10 +2,10 @@
 # TODO:
 
 # how to see past edits of a message discord.on_raw_message_edit^
-
 # forward message to an authorities channel
-# How to simulate banning a user
-# How can a moderator delete a post
+# How can a moderator delete a post .delete()
+# If user banned, go delete all their messages
+# Implinent a strike system that checks how many times a user has been reported
 
 import discord
 from discord.ext import commands
@@ -17,7 +17,7 @@ import requests #for google vm
 from report import Report
 from deep_translator import GoogleTranslator as GoogleTranslate
 
-
+ 
 import pdb
 
 # Set up logging to the console
@@ -69,6 +69,7 @@ class ModBot(discord.Client):
                     self.toreport = channel
                 elif channel.name == f'group-{self.group_num}-authorities':
                     self.authorities = self.authorities[guild.id]
+
         
 
     async def on_message(self, message):
@@ -119,10 +120,13 @@ class ModBot(discord.Client):
                 await self.toreport.send(report_to_send)
                 report_to_send = "Translated Reported Message:" + "```" + Report.reported_message.author.name + ": " + GoogleTranslate(source='auto', target='english').translate(Report.reported_message.content) + "```"
                 await self.toreport.send(report_to_send)
+                await self.toreport.send("Here is the message link :" + Report.message_link)
                 if Report.context != None:
                     await self.toreport.send("the user gives the following context: " + "```" + Report.context + "```")
                 elif "school" or "public" in Report.tags:
-                    await self.authorities.send("WARNING: CREDIBLE THREAT")
+                    pass
+                    #await self.authorities.send("WARNING: CREDIBLE THREAT")
+            #await Report.reported_message.delete()
             Report.reported_message = None
             Report.context = None
             Report.tags = ""
@@ -130,14 +134,25 @@ class ModBot(discord.Client):
 
     async def handle_channel_message(self, message):
         # Only handle messages sent in the "group-36" channel
-        if not message.channel.name == f'group-{self.group_num}':
-            return
+        #if not message.channel.name == f'group-{self.group_num}':
+        #    return
+        mod_channel = self.mod_channels[message.guild.id]
+        if message.channel.name == f'group-{self.group_num}-mod':
+            if "delete" in message.content.lower():
+                message.content = message.content.lower().replace("delete", "")
+                m = re.search('/(\d+)/(\d+)/(\d+)', message.content)
+                guild = self.get_guild(int(m.group(1)))
+                channel = guild.get_channel(int(m.group(2)))
+                to_delete = await channel.fetch_message(int(m.group(3)))
+                await to_delete.delete()
+                await mod_channel.send("message deleted")
+                
         # MODIFY TO SEND FLAGGED OR REPORTED MESSAGES ONLY 
-        scores = self.eval_text(message.content)
-        if scores > 0:
-            mod_channel = self.mod_channels[message.guild.id]
-            await mod_channel.send(f'Forwarded message:\n{message.author.name}: "{message.content}"')
-            await mod_channel.send(self.code_format(scores))
+        elif message.channel.name == f'group-{self.group_num}':
+            scores = self.eval_text(message.content)
+            if scores > 0:
+                await mod_channel.send(f'Forwarded message:\n{message.author.name}: "{message.content}"')
+                await mod_channel.send(self.code_format(scores))
        
         
     
