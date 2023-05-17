@@ -22,6 +22,7 @@ class Report:
     HELP_KEYWORD = "help"
     PROCEED_KEYWORD = "continue"
     reported_message = None
+    reported_message_history = None
     message_link = None
     
     

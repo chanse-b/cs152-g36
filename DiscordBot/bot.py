@@ -43,6 +43,7 @@ class ModBot(discord.Client):
         self.group_num = None
         self.mod_channels = {} # Map from guild to the mod channel id for that guild
         self.reports = {} # Map from user IDs to the state of their report
+        self.user_messages = {} # Map of user ID , which is a map of message id: to message history
         self.toreport = None
         self.authorities = None
         self.main_channel = None
@@ -70,9 +71,13 @@ class ModBot(discord.Client):
                     self.authorities = self.authorities[guild.id]
                 elif channel.name == f'group-{self.group_num}':
                     self.main_channel = channel
-               
                     
+    async def on_raw_message_edit(self,payload):
+        channel = await self.fetch_channel(payload.channel_id)
+        message = await channel.fetch_message(payload.message_id)
+        self.user_messages[message.author.id][message.id].append(message.content) #if a message is edited, update the map
 
+                
         
 
     async def on_message(self, message):
@@ -86,6 +91,12 @@ class ModBot(discord.Client):
 
         # Check if this message was sent in a server ("guild") or if it's a DM
         if message.guild:
+            if message.author.id not in self.user_messages:
+                self.user_messages[message.author.id] = {message.id: []}
+            if message.id not in self.user_messages[message.author.id]:
+                self.user_messages[message.author.id][message.id] = []
+            self.user_messages[message.author.id][message.id].append(message.content)
+            print(self.user_messages)
             await self.handle_channel_message(message)
         else:
             await self.handle_dm(message)
@@ -128,7 +139,14 @@ class ModBot(discord.Client):
                     await self.toreport.send("the user gives the following context: " + "```" + Report.context + "```")
                 elif "school" or "public" in Report.tags:
                     pass
-                    #await self.authorities.send("WARNING: CREDIBLE THREAT")
+                if Report.reported_message.id in self.user_messages[Report.reported_message.author.id] and len(self.user_messages[Report.reported_message.author.id][Report.reported_message.id]) > 1:
+                    await self.toreport.send("here's the message history (oldest to newest): ")
+                    message_history = self.user_messages[Report.reported_message.author.id][Report.reported_message.id]
+                    for m in message_history:
+                        await self.toreport.send("```" + Report.reported_message.author.name + ": " + m + "```" + "\nTranslated: " + "```" + GoogleTranslate(source='auto', target='english').translate(m) + "```")
+                        await self.toreport.send("-----------------------------------")
+
+            #await self.authorities.send("WARNING: CREDIBLE THREAT")
             #await Report.reported_message.delete()
             Report.reported_message = None
             Report.context = None
@@ -159,7 +177,8 @@ class ModBot(discord.Client):
                         # Delete the message
                         await text.delete()
                         print(f"Deleted message: {message.content}")
-                
+            await mod_channel.send("Done")
+    
         # MODIFY TO SEND FLAGGED OR REPORTED MESSAGES ONLY 
         elif message.channel.name == f'group-{self.group_num}':
             scores = self.eval_text(message.content)
