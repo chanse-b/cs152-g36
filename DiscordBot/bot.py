@@ -5,8 +5,8 @@
 
 # forward message to an authorities channel
 # How to simulate banning a user
-# how to simulate blocking a user
 # How can a moderator delete a post
+
 import discord
 from discord.ext import commands
 import os
