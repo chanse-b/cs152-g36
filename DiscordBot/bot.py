@@ -116,7 +116,11 @@ class ModBot(discord.Client):
                 await self.toreport.send(report_to_send)
                 report_to_send = "Translated Reported Message:" + "```" + Report.reported_message.author.name + ": " + GoogleTranslate(source='auto', target='english').translate(Report.reported_message.content) + "```"
                 await self.toreport.send(report_to_send)
-                await self.toreport.send("the user gives the following context: " + "```" + Report.context + "```")
+                if Report.context != None:
+                    await self.toreport.send("the user gives the following context: " + "```" + Report.context + "```")
+            Report.reported_message = None
+            Report.context = None
+            Report.tags = ""
             self.reports.pop(author_id)
 
     async def handle_channel_message(self, message):

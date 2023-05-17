@@ -127,6 +127,7 @@ class Report:
             reply += "School Threat: A threat against a public, private, or secondary school \n"
             reply += "Personal Threat: a threat against you or someone else \n"
             reply += "Public Threat: a threat against an institution or against a group of people \n"
+            return [reply]
         
         if message.content == self.SPAM and self.state == State.MESSAGE_IDENTIFIED:
             self.state = State.SPAM_REPORT
@@ -217,6 +218,9 @@ class Report:
             return ["sorry, I'm afraid I didn't get that. Can you please try again?"]
         
         if self.state == State.DANGER_REPORT and "threat" in message.content.lower() and ("school" or "public") in message.content.lower():
+            if "school" in message.content.lower(): Report.tags += "school threat"
+            elif "public" in message.content.lower(): Report.tags += "public threat"
+            print(Report.tags," ", Report.reported_message)
             self.state = State.REPORT_COMPLETE
             ## route message to authorities
             reply = "Thank you for your report. It has been successfully received and will be reviewed by our content moderation team and sent to local authorities\n" 
@@ -224,8 +228,10 @@ class Report:
             return [reply]
         elif self.state == State.DANGER_REPORT and "threat" in message.content.lower():
             self.state = State.REPORT_COMPLETE
+            Report.tags += "personal"
             reply = "Thank you for your report. It has been successfully received and will be reviewed by our content moderation team\n" 
             reply += "If you have reason to believe that someone is in grave danger, please contact 911."
+            return [reply]
         elif self.state == State.DANGER_REPORT:
             return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel 5"]
         if self.state == State.REPORT_COMPLETE:
