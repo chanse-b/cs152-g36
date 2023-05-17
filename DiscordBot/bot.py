@@ -46,6 +46,7 @@ class ModBot(discord.Client):
         self.mod_channels = {} # Map from guild to the mod channel id for that guild
         self.reports = {} # Map from user IDs to the state of their report
         self.toreport = None
+        self.authorities = None
 
     async def on_ready(self):
         print(f'{self.user.name} has connected to Discord! It is these guilds:')
@@ -66,6 +67,8 @@ class ModBot(discord.Client):
                 if channel.name == f'group-{self.group_num}-mod':
                     self.mod_channels[guild.id] = channel
                     self.toreport = channel
+                elif channel.name == f'group-{self.group_num}-authorities':
+                    self.authorities = self.authorities[guild.id]
         
 
     async def on_message(self, message):
