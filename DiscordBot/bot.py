@@ -1,13 +1,12 @@
 # bot.py
 # TODO:
-# escalate comment to moderator --Done
+
 # how to see past edits of a message discord.on_raw_message_edit^
 
 # forward message to an authorities channel
 # How to simulate banning a user
 # how to simulate blocking a user
 # How can a moderator delete a post
-# offer translation instead of doing it----DONE
 import discord
 from discord.ext import commands
 import os
@@ -16,6 +15,8 @@ import logging
 import re
 import requests #for google vm
 from report import Report
+from deep_translator import GoogleTranslator as GoogleTranslate
+
 
 import pdb
 
@@ -109,17 +110,20 @@ class ModBot(discord.Client):
 
         # If the report is complete or cancelled, remove it from our map
         if self.reports[author_id].report_complete():
-            await self.toreport.send(message.author.name + " gives the following context:\n" + Report.context)
+            if Report.reported_message != None:
+                await self.toreport.send("```" + message.author.name + "```" + "has initiated a report with the following status: " + Report.tags + "\n")
+                report_to_send = "Original Reported Message:" + "```" + Report.reported_message.author.name + ": " + Report.reported_message.content + "```"
+                await self.toreport.send(report_to_send)
+                report_to_send = "Translated Reported Message:" + "```" + Report.reported_message.author.name + ": " + GoogleTranslate(source='auto', target='english').translate(Report.reported_message.content) + "```"
+                await self.toreport.send(report_to_send)
+                await self.toreport.send("the user gives the following context: " + "```" + Report.context + "```")
             self.reports.pop(author_id)
 
     async def handle_channel_message(self, message):
         # Only handle messages sent in the "group-36" channel
         if not message.channel.name == f'group-{self.group_num}':
             return
-
-        # Forward the message to the mod channel **CURRENTLY FORWARDS ALL MESSAGES FROM GROUP 36 TO MOD CHAT.
         # MODIFY TO SEND FLAGGED OR REPORTED MESSAGES ONLY 
-        # NEED TO INCLUDE CONTEXT REPORT AS WELL AND EDIT HISTORY
         scores = self.eval_text(message.content)
         if scores > 0:
             mod_channel = self.mod_channels[message.guild.id]

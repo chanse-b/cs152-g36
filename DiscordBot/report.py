@@ -2,7 +2,6 @@ from enum import Enum, auto
 import discord
 import re
 from deep_translator import GoogleTranslator as GoogleTranslate
-# from bot import ModBot 
 
 class State(Enum):
     REPORT_START = auto()
@@ -23,6 +22,7 @@ class Report:
     HELP_KEYWORD = "help"
     PROCEED_KEYWORD = "continue"
     reported_message = None
+    
     
     context = None
     tags = ""
@@ -53,6 +53,8 @@ class Report:
         print(message.content)
         if message.content == self.CANCEL_KEYWORD:
             self.state = State.REPORT_COMPLETE
+            Report.reported_message = None
+            Report.tags = ""
             return ["Report cancelled."]
         
         
@@ -76,7 +78,7 @@ class Report:
             if not channel:
                 return ["It seems this channel was deleted or never existed. Please try again or say `cancel` to cancel."]
             try:
-                self.reported_message = await channel.fetch_message(int(m.group(3)))
+                Report.reported_message = await channel.fetch_message(int(m.group(3)))
             except discord.errors.NotFound:
                 return ["It seems this message was deleted or never existed. Please try again or say `cancel` to cancel."]
 
@@ -112,7 +114,7 @@ class Report:
         
         if message.content == self.IMMINENT_DANGER and self.state == State.MESSAGE_IDENTIFIED:
             self.state = State.DANGER_REPORT
-            self.tags += message.content + ","
+            Report.tags += message.content + ","
             reply = "You have indicated someone is in imminent danger. If your safety is in jeopardy, it is recommended that you call 911 \n\n"
             reply += "please tell me more about the situation using the following options:  \n"
             reply += "School Threat \n"
@@ -128,7 +130,7 @@ class Report:
         
         if message.content == self.SPAM and self.state == State.MESSAGE_IDENTIFIED:
             self.state = State.SPAM_REPORT
-            self.tags += message.content + ","
+            Report.tags += message.content + ","
             reply = "You have indicated this message is spam \n"
             reply += "please tell me more about the situation using the following options: \n\n"
             reply += "Solicitation \n"
@@ -147,7 +149,7 @@ class Report:
         
         if message.content == self.HARASSMENT and self.state == State.MESSAGE_IDENTIFIED:
             self.state = State.HARRASSMENT_REPORT
-            self.tags += message.content + ","
+            Report.tags += message.content + ","
             reply = "You have indicated this message is harassment \n"
             reply += "please tell me more about the situation using the following options: \n\n"
             reply += "Unwanted Sexual Content \n"
@@ -168,7 +170,7 @@ class Report:
         
         if message.content == self.OFFENSIVE_CONTENT and self.state == State.MESSAGE_IDENTIFIED:
             self.state = State.OFFENSIVE_REPORT
-            self.tags += message.content + ","
+            Report.tags += message.content + ","
             reply = "You have indicated this message is offensive \n\n"
             reply += "please tell me more about the situation using the following options: \n"
             reply += "Hate Speech \n"
@@ -191,21 +193,21 @@ class Report:
         
         if (self.state == State.OFFENSIVE_REPORT or self.state == State.HARRASSMENT_REPORT or self.state == State.SPAM_REPORT) and message.content.lower() in self.bins:
             self.state = State.AWAITING_CONTEXT 
-            self.tags += message.content + ","
+            Report.tags += message.content + ","
             return ["Please include more details describing the context behind this comment."]
         
         if self.state == State.AWAITING_CONTEXT:
             # send context + the report to moderation channel
             print("message.content before context is set:", message.content)
             Report.context = message.content
-            print(self.tags)
+            print(Report.tags)
             reply = "Thank you for reporting this. It will now be reviewed by our moderation team. We will be in touch if we require additional information.\n"
             reply += "Do you want to block this user?"
             self.state = State.AWAITING_BLOCK_DECISION
             return [reply]
         
         if self.state == State.AWAITING_BLOCK_DECISION and message.content.lower() == "yes":
-            pass # block the user
+             # block the user
             self.state = State.REPORT_COMPLETE
             return ["user has been blocked"]
         elif self.state == State.AWAITING_BLOCK_DECISION and message.content.lower() == "no":
@@ -227,7 +229,6 @@ class Report:
         elif self.state == State.DANGER_REPORT:
             return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel 5"]
         if self.state == State.REPORT_COMPLETE:
-            tags = None
             return self.state == State.REPORT_COMPLETE
         
     def report_complete(self):
