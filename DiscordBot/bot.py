@@ -1,6 +1,6 @@
 # bot.py
 # TODO:
-# escalate comment to moderator and show its history
+# escalate comment to moderator --Done
 # how to see past edits of a message discord.on_raw_message_edit^
 
 # forward message to an authorities channel
@@ -109,7 +109,7 @@ class ModBot(discord.Client):
 
         # If the report is complete or cancelled, remove it from our map
         if self.reports[author_id].report_complete():
-            await self.toreport.send(Report.context)
+            await self.toreport.send(message.author.name + " gives the following context:\n" + Report.context)
             self.reports.pop(author_id)
 
     async def handle_channel_message(self, message):
@@ -120,11 +120,11 @@ class ModBot(discord.Client):
         # Forward the message to the mod channel **CURRENTLY FORWARDS ALL MESSAGES FROM GROUP 36 TO MOD CHAT.
         # MODIFY TO SEND FLAGGED OR REPORTED MESSAGES ONLY 
         # NEED TO INCLUDE CONTEXT REPORT AS WELL AND EDIT HISTORY
-       
-        mod_channel = self.mod_channels[message.guild.id]
-        await mod_channel.send(f'Forwarded message:\n{message.author.name}: "{message.content}"')
         scores = self.eval_text(message.content)
-        await mod_channel.send(self.code_format(scores))
+        if scores > 0:
+            mod_channel = self.mod_channels[message.guild.id]
+            await mod_channel.send(f'Forwarded message:\n{message.author.name}: "{message.content}"')
+            await mod_channel.send(self.code_format(scores))
        
         
     
@@ -134,7 +134,7 @@ class ModBot(discord.Client):
         TODO: Once you know how you want to evaluate messages in your channel, 
         insert your code here! This will primarily be used in Milestone 3. 
         '''
-        return message
+        return 0
 
     
     def code_format(self, text):
