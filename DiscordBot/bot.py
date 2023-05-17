@@ -3,8 +3,6 @@
 
 # how to see past edits of a message discord.on_raw_message_edit^
 # forward message to an authorities channel
-# How can a moderator delete a post .delete()
-# If user banned, go delete all their messages
 # Implinent a strike system that checks how many times a user has been reported
 
 import discord
@@ -47,6 +45,7 @@ class ModBot(discord.Client):
         self.reports = {} # Map from user IDs to the state of their report
         self.toreport = None
         self.authorities = None
+        self.main_channel = None
 
     async def on_ready(self):
         print(f'{self.user.name} has connected to Discord! It is these guilds:')
@@ -69,6 +68,10 @@ class ModBot(discord.Client):
                     self.toreport = channel
                 elif channel.name == f'group-{self.group_num}-authorities':
                     self.authorities = self.authorities[guild.id]
+                elif channel.name == f'group-{self.group_num}':
+                    self.main_channel = channel
+               
+                    
 
         
 
@@ -146,6 +149,16 @@ class ModBot(discord.Client):
                 to_delete = await channel.fetch_message(int(m.group(3)))
                 await to_delete.delete()
                 await mod_channel.send("message deleted")
+            if "ban" in message.content.lower():
+                message.content = message.content.lower().replace("ban", "")
+                texts = await self.main_channel.history(limit=None).flatten()
+                for text in texts:
+                    print("Check if the message was sent by the target user")
+                    print(text.author.name, ":", message.content)
+                    if text.author.name.lower() in message.content:
+                        # Delete the message
+                        await text.delete()
+                        print(f"Deleted message: {message.content}")
                 
         # MODIFY TO SEND FLAGGED OR REPORTED MESSAGES ONLY 
         elif message.channel.name == f'group-{self.group_num}':
