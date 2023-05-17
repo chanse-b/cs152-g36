@@ -1,7 +1,6 @@
 # bot.py
 # TODO:
 
-# how to see past edits of a message discord.on_raw_message_edit^
 # forward message to an authorities channel
 # Implinent a strike system that checks how many times a user has been reported
 
