@@ -121,6 +121,8 @@ class ModBot(discord.Client):
                 await self.toreport.send(report_to_send)
                 if Report.context != None:
                     await self.toreport.send("the user gives the following context: " + "```" + Report.context + "```")
+                elif "school" or "public" in Report.tags:
+                    await self.authorities.send("WARNING: CREDIBLE THREAT")
             Report.reported_message = None
             Report.context = None
             Report.tags = ""
