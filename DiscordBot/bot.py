@@ -1,8 +1,7 @@
 # bot.py
+# Chanse Bhakta, Febie Lin, Itbaan Nafi, Mo Akintan, Raul Ruiz-Solis, William Wang
 # TODO:
-
 # forward message to an authorities channel
-# Implinent a strike system that checks how many times a user has been reported
 
 import discord
 from discord.ext import commands
@@ -187,16 +186,17 @@ class ModBot(discord.Client):
             elif "ban" in message.content.lower():
                 message.content = message.content.lower().replace("ban", "")
                 texts = await self.main_channel.history(limit=None).flatten()
+                match = False
                 for text in texts:
                     print("Check if the message was sent by the target user")
                     print(text.author.name, ":", message.content)
-                    match = False
+                    
                     if text.author.name.lower() in message.content:
                         # Delete the message
                         await text.delete()
                         match = True
                         print(f"Deleted message: {message.content}")
-                    if match: await self.report_channel.send("``"+ text.author.name +"``" + " was banned successfully")
+                if match: await self.report_channel.send("``"+ text.author.name +"``" + " was banned successfully")
             elif "see" and "history" in message.content.lower():
                 message.content = message.content.lower().replace("see history", "")
                 texts = await self.main_channel.history(limit=None).flatten()
@@ -204,8 +204,8 @@ class ModBot(discord.Client):
                     print("Check if the message was sent by the target user")
                     print(text.author.name, ":", message.content)
                     if text.author.name.lower() in message.content:
-                        await self.report_channel.send("```" + text.author.name + ": " + text.content + "```" + "\nTranslated: " + "```" + GoogleTranslate(source='auto', target='english').translate(text.content) + "```")
-    
+                        await self.report_channel.send("```" + text.author.name + ": " + text.content + "```" + "Translated: " + "```" + GoogleTranslate(source='auto', target='english').translate(text.content) + "```")
+                        await self.report_channel.send("-----------------------------------")
         # MODIFY TO SEND FLAGGED OR REPORTED MESSAGES ONLY 
         elif message.channel.name == f'group-{self.group_num}':
             scores = self.eval_text(message.content)
