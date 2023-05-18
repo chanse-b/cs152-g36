@@ -45,8 +45,8 @@ class ModBot(discord.Client):
         self.reports = {} # Map from user IDs to the state of their report
         self.user_messages = {} # Map of user ID , which is a map of message id: to message history
         self.blacklist = {} # Map of how many times somone has been reported
-        self.toreport = None
-        self.authorities = None
+        self.report_channel = None
+        self.authorities_channel = None
         self.main_channel = None
 
     async def on_ready(self):
@@ -67,10 +67,10 @@ class ModBot(discord.Client):
             for channel in guild.text_channels:
                 if channel.name == f'group-{self.group_num}-mod':
                     self.mod_channels[guild.id] = channel
-                    self.toreport = channel
-                    await self.toreport.send("commands available to you:\n" + "ban [user]\n" + "delete [message link]\n" + "see [user] history\n")
+                    self.report_channel = channel
+                    await self.report_channel.send("commands available to you:\n" + "ban [user]\n" + "delete [message link]\n" + "see [user] history\n")
                 elif channel.name == f'group-{self.group_num}-authorities':
-                    self.authorities = self.authorities[guild.id]
+                    self.authorities_channel = self.authorities_channel[guild.id]
                 elif channel.name == f'group-{self.group_num}':
                     self.main_channel = channel
         
@@ -133,31 +133,31 @@ class ModBot(discord.Client):
         if self.reports[author_id].report_complete() or self.reports[author_id].report_cancelled():
             if Report.reported_message != None:
                 reported_user = Report.reported_message.author.name
-                await self.toreport.send("```" + message.author.name + "```" + "has initiated a report with the following status: " + Report.tags + "\n")
+                await self.report_channel.send("```" + message.author.name + "```" + "has initiated a report with the following status: " + Report.tags + "\n")
                 report_to_send = "Original Reported Message:" + "```" + reported_user + ": " + Report.reported_message.content + "```"
-                await self.toreport.send(report_to_send)
+                await self.report_channel.send(report_to_send)
                 report_to_send = "Translated Reported Message:" + "```" + reported_user + ": " + GoogleTranslate(source='auto', target='english').translate(Report.reported_message.content) + "```"
-                await self.toreport.send(report_to_send)
-                await self.toreport.send("Here is the message link :" + Report.message_link)
+                await self.report_channel.send(report_to_send)
+                await self.report_channel.send("Here is the message link :" + Report.message_link)
                 if Report.context != None:
-                    await self.toreport.send("the user gives the following context: " + "```" + Report.context + "```")
+                    await self.report_channel.send("the user gives the following context: " + "```" + Report.context + "```")
                 elif "school" or "public" in Report.tags:
                     pass
                 if Report.reported_message.id in self.user_messages[Report.reported_message.author.id] and len(self.user_messages[Report.reported_message.author.id][Report.reported_message.id]) > 1:
-                    await self.toreport.send("here's the message history (oldest to newest): ")
+                    await self.report_channel.send("here's the message history (oldest to newest): ")
                     message_history = self.user_messages[Report.reported_message.author.id][Report.reported_message.id]
                     for m in message_history:
-                        await self.toreport.send("```" + reported_user + ": " + m + "```" + "\nTranslated: " + "```" + GoogleTranslate(source='auto', target='english').translate(m) + "```")
-                        await self.toreport.send("-----------------------------------")
+                        await self.report_channel.send("```" + reported_user + ": " + m + "```" + "\nTranslated: " + "```" + GoogleTranslate(source='auto', target='english').translate(m) + "```")
+                        await self.report_channel.send("-----------------------------------")
 
-            #await self.authorities.send("WARNING: CREDIBLE THREAT")
+            #await self.authorities_channel.send("WARNING: CREDIBLE THREAT")
             #await Report.reported_message.delete()
             if self.reports[author_id].report_complete():
                 if Report.reported_message.author.name not in self.blacklist:
                     self.blacklist[reported_user] = 0
                 self.blacklist[reported_user] += 1
                 if self.blacklist[reported_user] >= 5:
-                    await self.toreport.send("```" + reported_user + "```" + "has been reported " + self.blacklist[reported_user] + "times, consider banning")
+                    await self.report_channel.send("```" + reported_user + "```" + "has been reported " + self.blacklist[reported_user] + "times, consider banning")
             Report.reported_message = None
             Report.context = None
             Report.tags = ""
@@ -195,7 +195,7 @@ class ModBot(discord.Client):
                     print("Check if the message was sent by the target user")
                     print(text.author.name, ":", message.content)
                     if text.author.name.lower() in message.content:
-                        await self.toreport.send("```" + text.author.name + ": " + text.content + "```" + "\nTranslated: " + "```" + GoogleTranslate(source='auto', target='english').translate(text.content) + "```")
+                        await self.report_channel.send("```" + text.author.name + ": " + text.content + "```" + "\nTranslated: " + "```" + GoogleTranslate(source='auto', target='english').translate(text.content) + "```")
     
         # MODIFY TO SEND FLAGGED OR REPORTED MESSAGES ONLY 
         elif message.channel.name == f'group-{self.group_num}':
