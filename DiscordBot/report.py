@@ -120,9 +120,9 @@ class Report:
             Report.tags += message.content + ","
             reply = "You have indicated someone is in imminent danger. If your safety is in jeopardy, it is recommended that you call 911 \n\n"
             reply += "please tell me more about the situation using the following options:  \n"
-            reply += "School Threat \n\n"
-            reply += "Personal Threat \n\n"
-            reply += "Public Threat \n\n"
+            reply += "School Threat \n"
+            reply += "Personal Threat \n"
+            reply += "Public Threat \n"
             reply += "Or say 'more info' for more information"
             return [reply]
         if message.content == 'more info' and self.state == State.DANGER_REPORT:
@@ -186,11 +186,11 @@ class Report:
             return [reply]
         if message.content == 'more info' and self.state == State.OFFENSIVE_REPORT:
             reply = "Here's some more information to what these types of spam are: \n\n"
-            reply += "Hate Speech: Abusive or threatening speech or writing that expresses prejudice on the basis of ethnicity, religion, sexual orientation, or similar grounds. \n"
-            reply += "Explicit Content: <Need a definition here> \n"
-            reply += "Graphic content: Any type of visual material that is considered disturbing, offensive, or inappropriate\n"
-            reply += "Personally-Targeted content: <>\n"
-            reply += "Encouragement of Violence: Somone encouraging violance toward an individual, group of people, or other entity\n"
+            reply += "Hate Speech: Abusive or threatening speech or writing that expresses prejudice on the basis of ethnicity, religion, sexual orientation, or similar grounds. \n\n"
+            reply += "Explicit Content: considered offensive or unsuitable for children (strong language, references for violence, physical and mental abuse, sexual behavior, discriminatory language) \n\n"
+            reply += "Graphic content: Any type of visual material that is considered disturbing, offensive, or inappropriate\n\n"
+            reply += "Personally-Targeted content: content created for a specific group or individual to drive a particular response (or prevent then from engaging in certain actions)\n\n"
+            reply += "Encouragement of Violence: Somone encouraging violance toward an individual, group of people, or other entity\n\n"
             return [reply]
         elif self.state == State.OFFENSIVE_REPORT and message.content not in self.bins:
             return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel 4"]
