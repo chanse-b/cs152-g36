@@ -2,6 +2,9 @@
 # Chanse Bhakta, Febie Lin, Itbaan Nafi, Mo Akintan, Raul Ruiz-Solis, William Wang
 # TODO:
 # forward message to an authorities channel
+# Adverseral countermeasures:
+#   1. Moderators can see reported message history if edits were made
+#   2. Messages in Foreign languages are translated to english for the moderator and at the reporter's discreation
 
 import discord
 from discord.ext import commands
@@ -13,6 +16,7 @@ import requests #for google vm
 from report import Report
 from report import State
 from deep_translator import GoogleTranslator as GoogleTranslate
+import unidecode as decode
 
  
 import pdb

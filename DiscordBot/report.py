@@ -1,6 +1,7 @@
 from enum import Enum, auto
 import discord
 import re
+import unidecode as decode
 from deep_translator import GoogleTranslator as GoogleTranslate
 
 class State(Enum):
