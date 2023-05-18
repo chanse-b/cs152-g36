@@ -173,10 +173,16 @@ class ModBot(discord.Client):
             if "delete" in message.content.lower():
                 message.content = message.content.lower().replace("delete", "")
                 m = re.search('/(\d+)/(\d+)/(\d+)', message.content)
+                if not m: return 
                 guild = self.get_guild(int(m.group(1)))
+                if not guild: return
                 channel = guild.get_channel(int(m.group(2)))
+                if not channel: return
                 to_delete = await channel.fetch_message(int(m.group(3)))
-                await to_delete.delete()
+                try: 
+                    await to_delete.delete()
+                except:
+                    pass
                 await mod_channel.send("message deleted")
             elif "ban" in message.content.lower():
                 message.content = message.content.lower().replace("ban", "")
@@ -184,10 +190,13 @@ class ModBot(discord.Client):
                 for text in texts:
                     print("Check if the message was sent by the target user")
                     print(text.author.name, ":", message.content)
+                    match = False
                     if text.author.name.lower() in message.content:
                         # Delete the message
                         await text.delete()
+                        match = True
                         print(f"Deleted message: {message.content}")
+                    if match: await self.report_channel.send("``"+ text.author.name +"``" + " was banned successfully")
             elif "see" and "history" in message.content.lower():
                 message.content = message.content.lower().replace("see history", "")
                 texts = await self.main_channel.history(limit=None).flatten()
