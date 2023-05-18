@@ -68,7 +68,7 @@ class ModBot(discord.Client):
                 if channel.name == f'group-{self.group_num}-mod':
                     self.mod_channels[guild.id] = channel
                     self.toreport = channel
-                    await self.toreport.send("commands available to you:\n" + "ban [user]\n" + "delete [message link]\n" + "see [user] info\n")
+                    await self.toreport.send("commands available to you:\n" + "ban [user]\n" + "delete [message link]\n" + "see [user] history\n")
                 elif channel.name == f'group-{self.group_num}-authorities':
                     self.authorities = self.authorities[guild.id]
                 elif channel.name == f'group-{self.group_num}':
