@@ -10,6 +10,7 @@ class State(Enum):
     MESSAGE_TO_TRANSLATE = auto()
     AWAITING_CONTEXT = auto()
     REPORT_COMPLETE = auto()
+    REPORT_CANCELLED = auto()
     DANGER_REPORT = auto()
     SPAM_REPORT = auto()
     HARRASSMENT_REPORT = auto()
@@ -54,7 +55,7 @@ class Report:
         message.content = message.content.lower()
         print(message.content)
         if message.content == self.CANCEL_KEYWORD:
-            self.state = State.REPORT_COMPLETE
+            self.state = State.REPORT_CANCELLED
             Report.reported_message = None
             Report.tags = ""
             return ["Report cancelled."]
@@ -62,7 +63,6 @@ class Report:
         
         if self.state == State.REPORT_START:
             reply =  "Thank you for starting the reporting process. "
-            reply += "Say `help` at any time for more information.\n\n"
             reply += "To start, please copy and paste the link to the message you want to report.\n"
             reply += "You can obtain this link by right-clicking the message and clicking `Copy Message Link`."
             self.state = State.AWAITING_MESSAGE
@@ -107,10 +107,10 @@ class Report:
                 
         if message.content.lower() == 'more info' and self.state == State.MESSAGE_IDENTIFIED:
             reply = "Here's some more information to what the classifcations mean: \n\n"
-            reply += "Spam: Any unwanted, unsolicited communcation\n"
-            reply += "Harassment: a repeated pattern of behavior intended to scare, harm, anger, or shame a targeted individual \n"
-            reply += "Offensive Content: Content that is defamitory, obscene, pornographic, gratuitously violenent or causes another person to be offended, scared, or worried.\n"
-            reply += "Imminent Danger: Somone or a group of persons who's life may be in danger now or in future.\n"
+            reply += "Spam: Any unwanted, unsolicited communcation\n\n"
+            reply += "Harassment: a repeated pattern of behavior intended to scare, harm, anger, or shame a targeted individual \n\n"
+            reply += "Offensive Content: Content that is defamitory, obscene, pornographic, gratuitously violenent or causes another person to be offended, scared, or worried.\n\n"
+            reply += "Imminent Danger: Somone or a group of persons who's life may be in danger now or in future.\n\n"
             return [reply]
         elif message.content not in self.AbuseTypes and self.state == State.MESSAGE_IDENTIFIED:
             return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel 1"]
@@ -120,16 +120,16 @@ class Report:
             Report.tags += message.content + ","
             reply = "You have indicated someone is in imminent danger. If your safety is in jeopardy, it is recommended that you call 911 \n\n"
             reply += "please tell me more about the situation using the following options:  \n"
-            reply += "School Threat \n"
-            reply += "Personal Threat \n"
+            reply += "School Threat \n\n"
+            reply += "Personal Threat \n\n"
             reply += "Public Threat \n\n"
             reply += "Or say 'more info' for more information"
             return [reply]
         if message.content == 'more info' and self.state == State.DANGER_REPORT:
             reply = "Here's some more information to what these types of threats are: \n\n"
-            reply += "School Threat: A threat against a public, private, or secondary school \n"
-            reply += "Personal Threat: a threat against you or someone else \n"
-            reply += "Public Threat: a threat against an institution or against a group of people \n"
+            reply += "School Threat: A threat against a public, private, or secondary school. \n\n"
+            reply += "Personal Threat: a threat against you or someone else. \n\n"
+            reply += "Public Threat: a threat against an institution or against a group of people. \n\n"
             return [reply]
         
         if message.content == self.SPAM and self.state == State.MESSAGE_IDENTIFIED:
@@ -144,9 +144,9 @@ class Report:
             return [reply]
         if message.content == 'more info' and self.state == State.SPAM_REPORT:
             reply = "Here's some more information to what these types of spam are: \n\n"
-            reply += "Solicitation: the offense of offering money to someone with the specific intent of inducing that person to commit a crime \n"
-            reply += "Fraud and/or Phishing: wrongful or criminal deception intended to result in financial or personal gain. \n"
-            reply += "Propaganda : the dissemination of information—facts, arguments, rumours, half-truths, or lies—to influence public opinion \n"
+            reply += "Solicitation: the offense of offering money to someone with the specific intent of inducing that person to commit a crime \n\n"
+            reply += "Fraud and/or Phishing: wrongful or criminal deception intended to result in financial or personal gain. \n\n"
+            reply += "Propaganda : the dissemination of information—facts, arguments, rumours, half-truths, or lies—to influence public opinion \n\n"
             return [reply]
         elif self.state == State.SPAM_REPORT and message.content not in self.bins:
             return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel 2"]
@@ -206,7 +206,7 @@ class Report:
             Report.context = message.content
             print(Report.tags)
             reply = "Thank you for reporting this. It will now be reviewed by our moderation team. We will be in touch if we require additional information.\n"
-            reply += "Do you want to block this user?"
+            reply += "Do you want to block this user? Please say yes or no."
             self.state = State.AWAITING_BLOCK_DECISION
             return [reply]
         
@@ -239,11 +239,14 @@ class Report:
             return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel 5"]
         if self.state == State.REPORT_COMPLETE:
             return self.state == State.REPORT_COMPLETE
+        if self.state == State.REPORT_CANCELLED:
+            return self.state == State.REPORT_CANCELLED
         
     def report_complete(self):
         return self.state == State.REPORT_COMPLETE
         
-    
+    def report_cancelled(self):
+        return self.state == State.REPORT_CANCELLED
 
 
     
