@@ -157,7 +157,7 @@ class ModBot(discord.Client):
                     self.blacklist[reported_user] = 0
                 self.blacklist[reported_user] += 1
                 if self.blacklist[reported_user] >= 5:
-                    await self.toreport.send("```" + reported_user + "```" + "has been reported 5+ times, consider banning")
+                    await self.toreport.send("```" + reported_user + "```" + "has been reported " + self.blacklist[reported_user] + "times, consider banning")
             Report.reported_message = None
             Report.context = None
             Report.tags = ""
