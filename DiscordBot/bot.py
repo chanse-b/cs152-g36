@@ -131,6 +131,8 @@ class ModBot(discord.Client):
         # If the report is complete or cancelled, remove it from our map
         if self.reports[author_id].report_complete() or self.reports[author_id].report_cancelled():
             if Report.reported_message != None:
+                if "school" or "public" in Report.tags:
+                    await self.report_channel.send("This is the threat specialist channel. use the command 'forward to authorities' to contact the local authorities")
                 reported_user = Report.reported_message.author.name
                 await self.report_channel.send("```" + message.author.name + "```" + "has initiated a report with the following status: " + Report.tags + "\n")
                 report_to_send = "Original Reported Message:" + "```" + reported_user + ": " + Report.reported_message.content + "```"
@@ -140,8 +142,6 @@ class ModBot(discord.Client):
                 await self.report_channel.send("Here is the message link :" + Report.message_link)
                 if Report.context != None:
                     await self.report_channel.send("the user gives the following context: " + "```" + Report.context + "```")
-                elif "school" or "public" in Report.tags:
-                    pass
                 if Report.reported_message.id in self.user_messages[Report.reported_message.author.id] and len(self.user_messages[Report.reported_message.author.id][Report.reported_message.id]) > 1:
                     await self.report_channel.send("here's the message history (oldest to newest): ")
                     message_history = self.user_messages[Report.reported_message.author.id][Report.reported_message.id]
@@ -206,6 +206,9 @@ class ModBot(discord.Client):
                     if text.author.name.lower() in message.content:
                         await self.report_channel.send("```" + text.author.name + ": " + text.content + "```" + "Translated: " + "```" + GoogleTranslate(source='auto', target='english').translate(text.content) + "```")
                         await self.report_channel.send("-----------------------------------")
+            elif "forward to authorities" in message.content:
+                 await self.report_channel.send("this report will be forwarded to the authorities")
+                
         # MODIFY TO SEND FLAGGED OR REPORTED MESSAGES ONLY 
         elif message.channel.name == f'group-{self.group_num}':
             scores = self.eval_text(message.content)

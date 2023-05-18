@@ -220,7 +220,7 @@ class Report:
         elif self.state == State.AWAITING_BLOCK_DECISION:
             return ["sorry, I'm afraid I didn't get that. Can you please try again?"]
         
-        if self.state == State.DANGER_REPORT and "threat" in message.content.lower() and ("school" or "public") in message.content.lower():
+        if self.state == State.DANGER_REPORT and "threat" in message.content.lower() and "school" in message.content.lower() or "public" in message.content.lower():
             if "school" in message.content.lower(): Report.tags += "school threat"
             elif "public" in message.content.lower(): Report.tags += "public threat"
             print(Report.tags," ", Report.reported_message)
