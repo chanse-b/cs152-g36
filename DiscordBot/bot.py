@@ -135,7 +135,7 @@ class ModBot(discord.Client):
         # If the report is complete or cancelled, remove it from our map
         if self.reports[author_id].report_complete() or self.reports[author_id].report_cancelled():
             if Report.reported_message != None:
-                if "school" or "public" in Report.tags:
+                if "school" in Report.tags or "public" in Report.tags:
                     await self.report_channel.send("This is the threat specialist channel. use the command 'forward to authorities' to contact the local authorities")
                 reported_user = Report.reported_message.author.name
                 await self.report_channel.send("```" + message.author.name + "```" + "has initiated a report with the following status: " + Report.tags + "\n")
