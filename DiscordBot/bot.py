@@ -194,13 +194,14 @@ class ModBot(discord.Client):
                 for text in texts:
                     print("Check if the message was sent by the target user")
                     print(text.author.name, ":", message.content)
-                    
+                    target = ""
                     if text.author.name.lower() in message.content:
                         # Delete the message
                         await text.delete()
                         match = True
+                        target = text.author.name
                         print(f"Deleted message: {message.content}")
-                if match: await self.report_channel.send("``"+ text.author.name +"``" + " was banned successfully")
+                if match: await self.report_channel.send("``"+ target +"``" + " was banned successfully")
             elif "see" and "history" in message.content.lower():
                 message.content = message.content.lower().replace("see history", "")
                 texts = await self.main_channel.history(limit=None).flatten()
