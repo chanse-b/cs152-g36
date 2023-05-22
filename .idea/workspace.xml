@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="0d9708ee-4738-4bcd-84fa-b584dfe6340b" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/DiscordBot/bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/DiscordBot/bot.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IgnoredFileRootStore">
+    <option name="generatedRoots">
+      <set>
+        <option value="$PROJECT_DIR$/.idea" />
+      </set>
+    </option>
+  </component>
+  <component name="ProjectId" id="2Q8JOTMLanEVg2qC8Vw7ncHQ1am" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PythonContentEntriesConfigurable" />
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <module name="cs152-g36" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="$USER_HOME$/venv/bin/python" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/.." />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="bot" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="cs152-g36" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="/usr/local/bin/python3.7" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/DiscordBot" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="false" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/DiscordBot/bot.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0d9708ee-4738-4bcd-84fa-b584dfe6340b" name="Default Changelist" comment="" />
+      <created>1684729242457</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1684729242457</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="232" y="90" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1684729413681">
+      <screen x="0" y="25" width="1440" height="816" />
+    </state>
+    <state x="232" y="90" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.25.1440.816@0.25.1440.816" timestamp="1684729413681" />
+    <state width="1159" height="207" key="GridCell.Tab.0.bottom" timestamp="1684734662585">
+      <screen x="0" y="25" width="1440" height="819" />
+    </state>
+    <state width="1159" height="207" key="GridCell.Tab.0.bottom/0.25.1440.816@0.25.1440.816" timestamp="1684733673763" />
+    <state width="1159" height="207" key="GridCell.Tab.0.bottom/0.25.1440.819@0.25.1440.819" timestamp="1684734662585" />
+    <state width="1159" height="207" key="GridCell.Tab.0.center" timestamp="1684734662584">
+      <screen x="0" y="25" width="1440" height="819" />
+    </state>
+    <state width="1159" height="207" key="GridCell.Tab.0.center/0.25.1440.816@0.25.1440.816" timestamp="1684733673762" />
+    <state width="1159" height="207" key="GridCell.Tab.0.center/0.25.1440.819@0.25.1440.819" timestamp="1684734662584" />
+    <state width="1159" height="207" key="GridCell.Tab.0.left" timestamp="1684734662584">
+      <screen x="0" y="25" width="1440" height="819" />
+    </state>
+    <state width="1159" height="207" key="GridCell.Tab.0.left/0.25.1440.816@0.25.1440.816" timestamp="1684733673762" />
+    <state width="1159" height="207" key="GridCell.Tab.0.left/0.25.1440.819@0.25.1440.819" timestamp="1684734662584" />
+    <state width="1159" height="207" key="GridCell.Tab.0.right" timestamp="1684734662584">
+      <screen x="0" y="25" width="1440" height="819" />
+    </state>
+    <state width="1159" height="207" key="GridCell.Tab.0.right/0.25.1440.816@0.25.1440.816" timestamp="1684733673763" />
+    <state width="1159" height="207" key="GridCell.Tab.0.right/0.25.1440.819@0.25.1440.819" timestamp="1684734662584" />
+    <state x="277" y="67" key="SettingsEditor" timestamp="1684729738291">
+      <screen x="0" y="25" width="1440" height="816" />
+    </state>
+    <state x="277" y="67" key="SettingsEditor/0.25.1440.816@0.25.1440.816" timestamp="1684729738291" />
+  </component>
+</project>

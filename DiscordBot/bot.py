@@ -18,7 +18,7 @@ from report import State
 from deep_translator import GoogleTranslator as GoogleTranslate
 import unidecode as decode
 
- 
+
 import pdb
 
 # Set up logging to the console
@@ -29,7 +29,7 @@ handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(me
 logger.addHandler(handler)
 
 # There should be a file called 'tokens.json' inside the same folder as this file
-token_path = 'DiscordBot/tokens.json'
+token_path = 'tokens.json'
 if not os.path.isfile(token_path):
     raise Exception(f"{token_path} not found!")
 with open(token_path) as f:
@@ -172,6 +172,7 @@ class ModBot(discord.Client):
         #if not message.channel.name == f'group-{self.group_num}':
         #    return
         mod_channel = self.mod_channels[message.guild.id]
+        print(message.content)
         if message.channel.name == f'group-{self.group_num}-mod':
             if "delete" in message.content.lower():
                 message.content = message.content.lower().replace("delete", "")
