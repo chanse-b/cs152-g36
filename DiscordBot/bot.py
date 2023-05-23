@@ -197,7 +197,7 @@ class ModBot(discord.Client):
                 try:
                     texts = await self.main_channel.history(limit=None).flatten()
                 except:
-                    texts = await self.main_channel.history(limit=None)
+                    texts = [message async for message in channel.history(limit=None)]
                 match = False
                 for text in texts:
                     print("Check if the message was sent by the target user")
