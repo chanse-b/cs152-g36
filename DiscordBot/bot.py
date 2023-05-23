@@ -194,7 +194,10 @@ class ModBot(discord.Client):
                 await mod_channel.send("message deleted")
             elif "ban" in message.content.lower():
                 message.content = message.content.lower().replace("ban", "")
-                texts = await self.main_channel.history(limit=None).flatten()
+                try:
+                    texts = await self.main_channel.history(limit=None).flatten()
+                except:
+                    texts = await self.main_channel.history(limit=None)
                 match = False
                 for text in texts:
                     print("Check if the message was sent by the target user")
