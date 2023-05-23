@@ -176,7 +176,6 @@ class ModBot(discord.Client):
         #if not message.channel.name == f'group-{self.group_num}':
         #    return
         mod_channel = self.mod_channels[message.guild.id]
-        print(message.content)
         if message.channel.name == f'group-{self.group_num}-mod':
             if "delete" in message.content.lower():
                 message.content = message.content.lower().replace("delete", "")
@@ -194,10 +193,7 @@ class ModBot(discord.Client):
                 await mod_channel.send("message deleted")
             elif "ban" in message.content.lower():
                 message.content = message.content.lower().replace("ban", "")
-                try:
-                    texts = [message async for message in self.main_channel.history(limit=None)]
-                except:
-                    texts = [message async for message in self.main_channel.history(limit=None)]
+                texts = [message async for message in self.main_channel.history(limit=None)]
                 match = False
                 for text in texts:
                     print("Check if the message was sent by the target user")
