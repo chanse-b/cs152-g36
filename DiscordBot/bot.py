@@ -4,7 +4,7 @@
 # forward message to an authorities channel
 # Adverseral countermeasures:
 #   1. Moderators can see reported message history if edits were made
-#   2. Messages in Foreign languages are translated to english for the moderator and at the reporter's discreation
+#    2. Messages in Foreign languages are translated to english for the moderator and at the reporter's discreation
 
 import discord
 from discord.ext import commands
