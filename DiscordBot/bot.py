@@ -195,7 +195,7 @@ class ModBot(discord.Client):
             elif "ban" in message.content.lower():
                 message.content = message.content.lower().replace("ban", "")
                 try:
-                    texts = await self.main_channel.history(limit=None).flatten()
+                    texts = [message async for message in channel.history(limit=None)]
                 except:
                     texts = [message async for message in channel.history(limit=None)]
                 match = False
