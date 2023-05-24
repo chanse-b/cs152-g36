@@ -160,15 +160,17 @@ class Report:
             reply += "Unwanted Sexual Content \n"
             reply += "Stalking \n"
             reply += "Impersonation \n"
-            reply += "Doxxing \n\n"
+            reply += "Doxxing \n"
+            reply += "Trolling\n\n"
             reply += "Or say 'more info' for more information"
             return [reply]
         if message.content == 'more info' and self.state == State.HARRASSMENT_REPORT:
             reply = "Here's some more information to what these types of spam are: \n\n"
-            reply += "Unwanted Sexual Content: Can inclucde being sent or shown naked or semi-naked images (nudes), receiving sexual messages, or being sent links to sexual videos\n"
-            reply += "Stalking: the crime of illegally following and watching someone over a period of time\n"
-            reply += "Impersonation: Somone pretending to be you or someone else\n"
-            reply += "Doxxing: search for and publish private or identifying information about (a particular individual) on the internet, typically with malicious intent. \n"
+            reply += "Unwanted Sexual Content: Can inclucde being sent or shown naked or semi-naked images (nudes), receiving sexual messages, or being sent links to sexual videos\n\n"
+            reply += "Stalking: the crime of illegally following and watching someone over a period of time\n\n"
+            reply += "Impersonation: Somone pretending to be you or someone else\n\n"
+            reply += "Doxxing: search for and publish private or identifying information about (a particular individual) on the internet, typically with malicious intent. \n\n"
+            reply += "Trolling: when someone post or comments online to deliberately upset others"
             return [reply]
         elif self.state == State.HARRASSMENT_REPORT and message.content not in self.bins:
             return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel 3"]
