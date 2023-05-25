@@ -229,7 +229,8 @@ class Report:
             print(Report.tags," ", Report.reported_message)
             self.state = State.REPORT_COMPLETE
             ## route message to authorities
-            reply = "Thank you for your report. It has been successfully received and will be reviewed by our content moderation team and sent to local authorities if necessary\n" 
+            reply = "Thank you for your report. It has been successfully received and will be reviewed by our content moderation team andw will be sent to local authorities if necessary\n" 
+            reply += "The user has also been blocked.\n"
             reply += "If you have reason to believe that someone is in grave danger, please contact 911."
             return [reply]
         elif self.state == State.DANGER_REPORT and "threat" in message.content.lower():

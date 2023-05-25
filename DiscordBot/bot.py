@@ -79,7 +79,7 @@ class ModBot(discord.Client):
                 elif channel.name == f'group-{self.group_num}-authorities':
                     self.authorities_channel = self.authorities_channel[guild.id]
                 elif channel.name == f'group-{self.group_num}':
-                    self.main_channel = channel
+                    self.main_channel = channel 
         
                     
     async def on_raw_message_edit(self,payload):
@@ -113,19 +113,21 @@ class ModBot(discord.Client):
 
     async def handle_dm(self, message):
         # Handle a help message
+        author_id = message.author.id
+        responses = []
         if message.content.lower() == Report.HELP_KEYWORD:
             reply = "Hi, " + "`" + message.author.name + "`" + ", it is my pleasure to assist you today. \n" 
             reply +=  "Please use the `report` command to begin the reporting process.\n"
             reply += "Use the `cancel` command to cancel the report process.\n"
             await message.channel.send(reply)
             return
-
-        author_id = message.author.id
-        responses = []
+        
 
         # Only respond to messages if they're part of a reporting flow
         if author_id not in self.reports and not message.content.lower().startswith(Report.START_KEYWORD):
-            return
+            reply = "Hi, " + "`" + message.author.name + "`" + ", say" + " `help` " + "if you need assistance. \n" 
+            await message.channel.send(reply)
+            return 
 
         # If we don't currently have an active report for this user, add one
         if author_id not in self.reports:
