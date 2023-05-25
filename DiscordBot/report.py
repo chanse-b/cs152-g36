@@ -114,7 +114,7 @@ class Report:
             reply += "Imminent Danger: Somone or a group of persons who's life may be in danger now or in future.\n\n"
             return [reply]
         elif message.content not in self.AbuseTypes and self.state == State.MESSAGE_IDENTIFIED:
-            return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel 1"]
+            return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel"]
         
         if message.content == self.IMMINENT_DANGER and self.state == State.MESSAGE_IDENTIFIED:
             self.state = State.DANGER_REPORT
@@ -150,7 +150,7 @@ class Report:
             reply += "Propaganda : the dissemination of information—facts, arguments, rumours, half-truths, or lies—to influence public opinion \n\n"
             return [reply]
         elif self.state == State.SPAM_REPORT and message.content not in self.bins:
-            return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel 2"]
+            return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel"]
         
         if message.content == self.HARASSMENT and self.state == State.MESSAGE_IDENTIFIED:
             self.state = State.HARRASSMENT_REPORT
@@ -173,7 +173,7 @@ class Report:
             reply += "Trolling: when someone post or comments online to deliberately upset others"
             return [reply]
         elif self.state == State.HARRASSMENT_REPORT and message.content not in self.bins:
-            return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel 3"]
+            return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel"]
         
         if message.content == self.OFFENSIVE_CONTENT and self.state == State.MESSAGE_IDENTIFIED:
             self.state = State.OFFENSIVE_REPORT
@@ -196,7 +196,7 @@ class Report:
             reply += "Encouragement of Violence: Somone encouraging violance toward an individual, group of people, or other entity\n\n"
             return [reply]
         elif self.state == State.OFFENSIVE_REPORT and message.content not in self.bins:
-            return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel 4"]
+            return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel"]
         
         if (self.state == State.OFFENSIVE_REPORT or self.state == State.HARRASSMENT_REPORT or self.state == State.SPAM_REPORT) and message.content.lower() in self.bins:
             self.state = State.AWAITING_CONTEXT 
@@ -229,7 +229,7 @@ class Report:
             print(Report.tags," ", Report.reported_message)
             self.state = State.REPORT_COMPLETE
             ## route message to authorities
-            reply = "Thank you for your report. It has been successfully received and will be reviewed by our content moderation team and sent to local authorities\n" 
+            reply = "Thank you for your report. It has been successfully received and will be reviewed by our content moderation team and sent to local authorities if necessary\n" 
             reply += "If you have reason to believe that someone is in grave danger, please contact 911."
             return [reply]
         elif self.state == State.DANGER_REPORT and "threat" in message.content.lower():
@@ -239,7 +239,7 @@ class Report:
             reply += "If you have reason to believe that someone is in grave danger, please contact 911."
             return [reply]
         elif self.state == State.DANGER_REPORT:
-            return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel 5"]
+            return ["I didn't quite catch that. Please try again or enter 'cancel' to cancel"]
         if self.state == State.REPORT_COMPLETE:
             return self.state == State.REPORT_COMPLETE
         if self.state == State.REPORT_CANCELLED:
