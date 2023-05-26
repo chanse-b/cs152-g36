@@ -113,15 +113,15 @@ class ModBot(discord.Client):
 
     async def handle_dm(self, message):
         # Handle a help message
-        author_id = message.author.id
-        responses = []
+        
         if message.content.lower() == Report.HELP_KEYWORD:
             reply = "Hi, " + "`" + message.author.name + "`" + ", it is my pleasure to assist you today. \n" 
             reply +=  "Please use the `report` command to begin the reporting process.\n"
             reply += "Use the `cancel` command to cancel the report process.\n"
             await message.channel.send(reply)
             return
-        
+        author_id = message.author.id
+        responses = []
 
         # Only respond to messages if they're part of a reporting flow
         if author_id not in self.reports and not message.content.lower().startswith(Report.START_KEYWORD):
