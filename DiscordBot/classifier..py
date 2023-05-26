@@ -1,8 +1,6 @@
 import os
 import openai
 import json
-openai.organization = "org-YVZe9QFuR0Ke0J0rqr7l2R2L"
-openai.api_key = "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"
 # print(openai.Model.list()) # Can used to verify GPT-4 access
 
 gtp4_path = "gpt4.json"
