@@ -26,8 +26,6 @@ messages=[
 
 
 output = response['choices'][0]['message']['content']
-response = openai.Moderation.create(
-    input="your message"
-)
+
 output = response["results"][0]
 print(output)
