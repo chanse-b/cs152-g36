@@ -3,7 +3,7 @@ import discord
 import re
 import unidecode as decode
 from deep_translator import GoogleTranslator as GoogleTranslate
-
+#
 class State(Enum):
     REPORT_START = auto()
     AWAITING_MESSAGE = auto()
