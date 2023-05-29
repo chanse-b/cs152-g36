@@ -2,6 +2,7 @@ from queue import PriorityQueue
 from googleapiclient import discovery
 import os
 import json
+import unidecode as decode
 
 token_path = 'tokens.json'
 if not os.path.isfile(token_path):
