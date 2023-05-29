@@ -17,6 +17,7 @@ from report import Report
 from report import State
 from deep_translator import GoogleTranslator as GoogleTranslate
 import unidecode as decode
+from classify import analyzer
 
 
 import pdb
@@ -86,7 +87,15 @@ class ModBot(discord.Client):
         channel = await self.fetch_channel(payload.channel_id)
         message = await channel.fetch_message(payload.message_id)
         self.user_messages[message.author.id][message.id].append(message.content) #if a message is edited, update the map
-
+        # analyze the message for harmful content
+        scores = self.eval_text(message.content)
+        if scores > .5:
+            await self.report_channel.send("-----------------------------------")
+            await self.report_channel.send(f'Forwarded message:\n{message.author.name}: "{message.content}"')
+            await self.report_channel.send("Translated message from detectected language:" + GoogleTranslate(source='auto', target='english').translate(message.content))
+            await self.report_channel.send("This message has been edited. Consider viewing the user's history")
+            await self.report_channel.send(self.code_format(scores))
+            await self.report_channel.send("-----------------------------------")
                 
         
 
@@ -223,10 +232,12 @@ class ModBot(discord.Client):
         # MODIFY TO SEND FLAGGED OR REPORTED MESSAGES ONLY 
         elif message.channel.name == f'group-{self.group_num}':
             scores = self.eval_text(message.content)
-            if scores > 0:
+            if scores > .5:
+                await self.report_channel.send("-----------------------------------")
                 await mod_channel.send(f'Forwarded message:\n{message.author.name}: "{message.content}"')
+                await mod_channel.send("Translated message from detectected language:" + GoogleTranslate(source='auto', target='english').translate(message.content))
                 await mod_channel.send(self.code_format(scores))
-       
+                await self.report_channel.send("-----------------------------------")
         
     
         
@@ -235,7 +246,8 @@ class ModBot(discord.Client):
         TODO: Once you know how you want to evaluate messages in your channel, 
         insert your code here! This will primarily be used in Milestone 3. 
         '''
-        return 0
+        print(analyzer(message))
+        return analyzer(message)
 
     
     def code_format(self, text):
@@ -244,7 +256,7 @@ class ModBot(discord.Client):
         evaluated, insert your code here for formatting the string to be 
         shown in the mod channel. 
         '''
-        return "Evaluated: '" + text+ "'"
+        return "Evaluated: '" + str(text) + "'"
     
 client = ModBot()
 client.run(discord_token)

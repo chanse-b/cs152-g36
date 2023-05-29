@@ -12,8 +12,7 @@ with open(token_path) as f:
     perspective_token = tokens['perspective']
     print("success")
     
-#def analyzer(message):
-    text_to_analyze = "Howdy Partner!"
+def analyzer(text_to_analyze):
     client = discovery.build("commentanalyzer","v1alpha1", developerKey=perspective_token,
     discoveryServiceUrl="https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
     static_discovery=False,)
@@ -23,4 +22,7 @@ with open(token_path) as f:
     'requestedAttributes': {'THREAT': {}}
     }
     response = client.comments().analyze(body=analyze_request).execute()
-    print(json.dumps(response, indent=2))
+    #print(json.dumps(response, indent=2))
+    #print(response)
+    return response['attributeScores']['THREAT']['spanScores'][0]['score']['value']
+
