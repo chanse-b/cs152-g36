@@ -10,7 +10,7 @@ with open(token_path) as f:
     # If you get an error here, it means your token is formatted incorrectly. Did you put it in quotes?
     tokens = json.load(f)
     perspective_token = tokens['perspective']
-    print("success")
+    print("perspective successfully activated")
     
 def analyzer(text_to_analyze):
     client = discovery.build("commentanalyzer","v1alpha1", developerKey=perspective_token,
