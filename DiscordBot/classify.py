@@ -3,6 +3,7 @@ from googleapiclient import discovery
 import os
 import json
 import unidecode as decode
+from deep_translator import GoogleTranslator as GoogleTranslate
 
 token_path = 'tokens.json'
 if not os.path.isfile(token_path):
@@ -19,11 +20,24 @@ def analyzer(text_to_analyze):
     discoveryServiceUrl="https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
     static_discovery=False,)
 
-    analyze_request = {
-    'comment': { 'text': text_to_analyze },
-    'requestedAttributes': {'THREAT': {}}
-    }
-    response = client.comments().analyze(body=analyze_request).execute()
+    try: # for foreign language detection
+        analyze_request = {
+        'comment': { 'text': text_to_analyze },
+        'requestedAttributes': {'THREAT': {}}
+        }
+        response = client.comments().analyze(body=analyze_request).execute()
+    except:
+        print(text_to_analyze)
+        text_to_analyze = GoogleTranslate(source='auto', target='english').translate(text_to_analyze)
+        print(text_to_analyze)
+        analyze_request = {
+        'comment': { 'text': text_to_analyze},
+        'requestedAttributes': {'THREAT': {}}
+        }
+        try: 
+            response = client.comments().analyze(body=analyze_request).execute()
+        except: 
+            return -1 
     #print(json.dumps(response, indent=2))
     #print(response)
     return response['attributeScores']['THREAT']['spanScores'][0]['score']['value']
