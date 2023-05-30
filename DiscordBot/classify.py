@@ -12,6 +12,7 @@ with open(token_path) as f:
     tokens = json.load(f)
     perspective_token = tokens['perspective']
     print("perspective successfully activated")
+
     
 def analyzer(text_to_analyze):
     client = discovery.build("commentanalyzer","v1alpha1", developerKey=perspective_token,
