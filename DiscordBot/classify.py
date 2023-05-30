@@ -1,4 +1,3 @@
-from queue import PriorityQueue
 from googleapiclient import discovery
 import os
 import json
