@@ -27,9 +27,7 @@ def analyzer(text_to_analyze):
         }
         response = client.comments().analyze(body=analyze_request).execute()
     except:
-        print(text_to_analyze)
         text_to_analyze = GoogleTranslate(source='auto', target='english').translate(text_to_analyze)
-        print(text_to_analyze)
         analyze_request = {
         'comment': { 'text': text_to_analyze},
         'requestedAttributes': {'THREAT': {}}
