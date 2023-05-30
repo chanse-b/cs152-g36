@@ -245,21 +245,23 @@ class ModBot(discord.Client):
         # MODIFY TO SEND FLAGGED OR REPORTED MESSAGES ONLY 
         elif message.channel.name == f'group-{self.group_num}':
             scores = self.eval_text(message.content)
+            decoded_scores = self.eval_text(decode.unidecode(message.content))
             if scores > .5:
                 await self.report_channel.send("-----------------------------------")
+                await self.report_channel.send("This is the threat specialist channel. use the command 'forward to authorities' to contact the local authorities")
                 await mod_channel.send(f'Forwarded message:\n{message.author.name}: "{message.content}"')
                 await mod_channel.send("Translated message from detectected language:" + GoogleTranslate(source='auto', target='english').translate(message.content))
                 await mod_channel.send(self.code_format(scores))
                 await self.report_channel.send("-----------------------------------")
-            elif self.eval_text(decode.unidecode(message.content)) > .5:
+            elif decoded_scores > .5:
                 await self.report_channel.send("-----------------------------------")
+                await self.report_channel.send("This is the threat specialist channel. use the command 'forward to authorities' to contact the local authorities")
                 await mod_channel.send(f'Forwarded decoded message:\n{message.author.name}: "{decode.unidecode(message.content)}"')
                 await mod_channel.send("Translated message from detectected language:" + GoogleTranslate(source='auto', target='english').translate(message.content))
-                await mod_channel.send(self.code_format(scores))
+                await mod_channel.send(self.code_format(decoded_scores))
                 await self.report_channel.send("-----------------------------------")
             elif scores == -1:
                 await self.report_channel.send( "Consider viewing " + '`' + message.author.name + '`' + "'s history, message could not be scanned")
-        
     
         
     def eval_text(self, message):
@@ -267,7 +269,7 @@ class ModBot(discord.Client):
         TODO: Once you know how you want to evaluate messages in your channel, 
         insert your code here! This will primarily be used in Milestone 3. 
         '''
-        print(analyzer(message))
+        print(analyzer(message), message)
         return analyzer(message)
 
     
@@ -277,7 +279,7 @@ class ModBot(discord.Client):
         evaluated, insert your code here for formatting the string to be 
         shown in the mod channel. 
         '''
-        return "Evaluated with: '" + str(text*100) + "%% confidence"
+        return "Evaluated with: '" + str(text*100) + "% confidence"
     
 client = ModBot()
 client.run(discord_token)
