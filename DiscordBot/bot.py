@@ -106,7 +106,7 @@ class ModBot(discord.Client):
             await self.report_channel.send(self.code_format(scores))
             await self.report_channel.send("-----------------------------------")
         elif scores == -1: # message could not be scanned, send to manual review
-            await self.report_channel.send( "Consider viewing " + '`' + message.author.name + '`' + "'s history, message could not be scanned")
+            await self.report_channel.send( "Consider viewing " + '`' + message.author.name + '`' + "'s history, message " +  '`'+message.content +'`' " could not be scanned")
                 
         
 
