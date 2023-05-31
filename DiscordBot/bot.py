@@ -97,7 +97,7 @@ class ModBot(discord.Client):
             await self.report_channel.send("This message has been edited. Consider viewing the user's history")
             await self.report_channel.send(self.code_format(scores))
             await self.report_channel.send("-----------------------------------")
-        elif self.eval_text(decode.unidecode(message.content)):
+        elif self.eval_text(decode.unidecode(message.content) > .5):
             await self.report_channel.send("-----------------------------------")
             await self.report_channel.send(f'Forwarded message:\n{message.author.name}: "{message.content}"')
             await self.report_channel.send("The message was encoded. Decoded as: " + str(decode.unidecode(message.content)))
