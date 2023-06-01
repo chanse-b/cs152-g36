@@ -4,7 +4,7 @@ import json
 import unidecode as decode
 from deep_translator import GoogleTranslator as GoogleTranslate
 import pandas as pd
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, accuracy_score, recall_score, precision_score
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -88,6 +88,9 @@ def threat_confusionMatrix():
     plt.title("Confusion Matrix For Threat Detection")
     plt.xlabel("Predicted Label")
     plt.ylabel("True Label")
+    print(recall_score(y_true, y_pred))
+    print(precision_score(y_true, y_pred))
+    print(accuracy_score(y_true, y_pred))
     return plt.show()
 
 def label_confusionMatrix():
@@ -114,10 +117,10 @@ def label_confusionMatrix():
     # Step 7: Display the confusion matrix using a heatmap
     labels = ['Personal', 'Public', 'School']
     plt.figure(figsize=(6, 4))
-    sns.heatmap(cm, annot=True, fmt='.1%', cmap='Blues', xticklabels=labels, yticklabels=labels)
-    plt.xlabel('Predicted')
-    plt.ylabel('True')
-    plt.title('Confusion Matrix')
+    sns.heatmap(cm, annot=True, fmt='.1%', cmap='Blues')#, xticklabels=labels, yticklabels=labels)
+    plt.xlabel('Predicted Label')
+    plt.ylabel('True Label')
+    plt.title('Confusion Matrix for Threat Type')
     plt.show()
 
 threat_confusionMatrix()
