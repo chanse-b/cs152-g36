@@ -21,20 +21,20 @@ with open(token_path) as f:
     tokens = json.load(f)
     perspective_token = tokens['perspective']
     print("perspective successfully activated")
+    # train the Naive Bayes model
     df = pd.read_csv('label_data.csv')
-    # Step 2: Preprocess text and create feature vectors
+    # create feature vectors
     vectorizer = TfidfVectorizer()
     X = vectorizer.fit_transform(df['message'])
     y = df['label']
-    # training the data
+    # Use all of the data
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=1, random_state=42)
-    #Train a Multinomial Naive Bayes classifier
+    # Train a Multinomial Naive Bayes classifier
     classifier = MultinomialNB()
     classifier.fit(X_train, y_train)
 
 
 def threat_labeler(message):
-    # Step 6: Print classification report
     #print(classification_report(y_test, y_pred))
     return classifier.predict(vectorizer.transform([message]))[0]
 
@@ -68,26 +68,55 @@ def analyzer(text_to_analyze):
         return score, threat_labeler(text_to_analyze)
     return score, None
 
-def confusionMatrix():
+def threat_confusionMatrix():
     # Read the Excel file into a pandas DataFrame
     df = pd.read_excel('threatening_messages.xlsx')
 
-    # Assuming the first column is 'strings' and the second column is 'labels'
+    # Assuming the first column is 'strings' 
     messages = df.iloc[:,0]
-    print(messages)
     y_true = (df.iloc[:, 1])  # Get the ground truth labels
-    print(y_true[0])
-    y_pred = ([1 if analyzer(message) > .5 else 0 for message in messages]) # Get the predicted labels
+    y_pred = ([1 if analyzer(message)[0] > .5 else 0 for message in messages]) # Get the predicted labels
 
     # Build the confusion matrix
     cm = confusion_matrix(y_true, y_pred, normalize='all')
 
     # Visualize the confusion matrix
+    labels = ['Non-Threat',"Threat"]
     plt.figure(figsize=(8, 6))
-    sns.heatmap(cm, annot=True, fmt=".1%", cmap="Blues")
+    sns.heatmap(cm, annot=True, fmt=".1%", cmap="Blues", xticklabels=labels, yticklabels=labels)
     plt.title("Confusion Matrix For Threat Detection")
-    plt.xlabel("Predicted Threat")
-    plt.ylabel("True Threat")
+    plt.xlabel("Predicted Label")
+    plt.ylabel("True Label")
     return plt.show()
 
-#confusionMatrix()
+def label_confusionMatrix():
+    df = pd.read_csv('label_data.csv')
+
+    # Step 2: Preprocess text and create feature vectors
+    vectorizer = TfidfVectorizer()
+    X = vectorizer.fit_transform(df['message'])
+    y = df['label']
+
+    # Step 3: Split data into training and test sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.6, random_state=42)
+
+    # Step 4: Train a Multinomial Naive Bayes classifier
+    classifier = MultinomialNB()
+    classifier.fit(X_train, y_train)
+
+    # Step 5: Predict labels for the test set
+    y_pred = classifier.predict(X_test)
+
+    # Step 6: Create a confusion matrix
+    cm = confusion_matrix(y_test, y_pred)
+
+    # Step 7: Display the confusion matrix using a heatmap
+    labels = ['Personal', 'Public', 'School']
+    plt.figure(figsize=(6, 4))
+    sns.heatmap(cm, annot=True, fmt='.1%', cmap='Blues', xticklabels=labels, yticklabels=labels)
+    plt.xlabel('Predicted')
+    plt.ylabel('True')
+    plt.title('Confusion Matrix')
+    plt.show()
+
+threat_confusionMatrix()
