@@ -7,6 +7,10 @@ import pandas as pd
 from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import classification_report
 
 
 token_path = 'tokens.json'
@@ -17,8 +21,25 @@ with open(token_path) as f:
     tokens = json.load(f)
     perspective_token = tokens['perspective']
     print("perspective successfully activated")
+    df = pd.read_csv('label_data.csv')
+    # Step 2: Preprocess text and create feature vectors
+    vectorizer = TfidfVectorizer()
+    X = vectorizer.fit_transform(df['message'])
+    y = df['label']
+    # training the data
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=1, random_state=42)
+    #Train a Multinomial Naive Bayes classifier
+    classifier = MultinomialNB()
+    classifier.fit(X_train, y_train)
+
+
+def threat_labeler(message):
+    # Step 6: Print classification report
+    #print(classification_report(y_test, y_pred))
+    return classifier.predict(vectorizer.transform([message]))[0]
 
     
+
 def analyzer(text_to_analyze):
     client = discovery.build("commentanalyzer","v1alpha1", developerKey=perspective_token,
     discoveryServiceUrl="https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
@@ -39,29 +60,34 @@ def analyzer(text_to_analyze):
         try: 
             response = client.comments().analyze(body=analyze_request).execute()
         except: 
-            return -1 
+            return -1, None
     #print(json.dumps(response, indent=2))
     #print(response)
-    return response['attributeScores']['THREAT']['spanScores'][0]['score']['value']
+    score = response['attributeScores']['THREAT']['spanScores'][0]['score']['value']
+    if score > .5:
+        return score, threat_labeler(text_to_analyze)
+    return score, None
 
 def confusionMatrix():
     # Read the Excel file into a pandas DataFrame
-    df = pd.read_excel('path_to_your_excel_file.xlsx')
+    df = pd.read_excel('threatening_messages.xlsx')
 
     # Assuming the first column is 'strings' and the second column is 'labels'
     messages = df.iloc[:,0]
-    y_true = df.iloc[:, 1]  # Get the ground truth labels
-    y_pred = [1 if analyzer(message) > .5 else 0 for message in messages] # Get the predicted labels
+    print(messages)
+    y_true = (df.iloc[:, 1])  # Get the ground truth labels
+    print(y_true[0])
+    y_pred = ([1 if analyzer(message) > .5 else 0 for message in messages]) # Get the predicted labels
 
     # Build the confusion matrix
-    cm = confusion_matrix(y_true, y_pred)
+    cm = confusion_matrix(y_true, y_pred, normalize='all')
 
     # Visualize the confusion matrix
     plt.figure(figsize=(8, 6))
-    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
-    plt.title("Confusion Matrix")
-    plt.xlabel("Predicted Label")
-    plt.ylabel("True Label")
-    plt.show()
+    sns.heatmap(cm, annot=True, fmt=".1%", cmap="Blues")
+    plt.title("Confusion Matrix For Threat Detection")
+    plt.xlabel("Predicted Threat")
+    plt.ylabel("True Threat")
+    return plt.show()
 
-confusionMatrix()
+#confusionMatrix()

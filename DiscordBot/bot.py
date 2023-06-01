@@ -90,14 +90,15 @@ class ModBot(discord.Client):
         self.user_messages[message.author.id][message.id].append(message.content) #if a message is edited, update the map
         # analyze the message for harmful content
         scores = self.eval_text(message.content)
-        if scores > .5:
+        decoded_scores =  self.eval_text(decode.unidecode(message.content))
+        if scores[0] > .5:
             await self.report_channel.send("-----------------------------------")
             await self.report_channel.send(f'Forwarded message:\n{message.author.name}: "{message.content}"')
             await self.report_channel.send("Translated message from detectected language:" + GoogleTranslate(source='auto', target='english').translate(message.content))
             await self.report_channel.send("This message has been edited. Consider viewing the user's history")
             await self.report_channel.send(self.code_format(scores))
             await self.report_channel.send("-----------------------------------")
-        elif self.eval_text(decode.unidecode(message.content) > .5):
+        elif decoded_scores[0] > .5:
             await self.report_channel.send("-----------------------------------")
             await self.report_channel.send(f'Forwarded message:\n{message.author.name}: "{message.content}"')
             await self.report_channel.send("The message was encoded. Decoded as: " + str(decode.unidecode(message.content)))
@@ -247,21 +248,21 @@ class ModBot(discord.Client):
         elif message.channel.name == f'group-{self.group_num}':
             scores = self.eval_text(message.content)
             decoded_scores = self.eval_text(decode.unidecode(message.content))
-            if scores > .5:
+            if scores[0] > .5:
                 await self.report_channel.send("-----------------------------------")
                 await self.report_channel.send("This is the threat specialist channel. use the command 'forward to authorities' to contact the local authorities")
                 await mod_channel.send(f'Forwarded message:\n{message.author.name}: "{message.content}"')
                 await mod_channel.send("Translated message from detectected language:" + GoogleTranslate(source='auto', target='english').translate(message.content))
                 await mod_channel.send(self.code_format(scores))
                 await self.report_channel.send("-----------------------------------")
-            elif decoded_scores > .5:
+            elif decoded_scores[0] > .5:
                 await self.report_channel.send("-----------------------------------")
                 await self.report_channel.send("This is the threat specialist channel. use the command 'forward to authorities' to contact the local authorities")
                 await mod_channel.send(f'Forwarded decoded message:\n{message.author.name}: "{decode.unidecode(message.content)}"')
                 await mod_channel.send("Translated message from detectected language:" + GoogleTranslate(source='auto', target='english').translate(message.content))
                 await mod_channel.send(self.code_format(decoded_scores))
                 await self.report_channel.send("-----------------------------------")
-            elif scores == -1:
+            elif scores[0] == -1 or decoded_scores[0] == -1:
                 await self.report_channel.send( "Consider viewing " + '`' + message.author.name + '`' + "'s history, message could not be scanned")
     
         
@@ -274,13 +275,13 @@ class ModBot(discord.Client):
         return analyzer(message)
 
     
-    def code_format(self, text):
+    def code_format(self, scores):
         ''''
         TODO: Once you know how you want to show that a message has been 
         evaluated, insert your code here for formatting the string to be 
         shown in the mod channel. 
         '''
-        return "Evaluated with: '" + str(text*100) + "% confidence"
+        return "Evaluated " + str(scores[1]).upper() + " Threat" + " with: '" + str(scores[0]*100) + "% confidence"
     
 client = ModBot()
 client.run(discord_token)
