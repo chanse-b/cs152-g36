@@ -98,7 +98,7 @@ def label_confusionMatrix():
     y = df['label']
 
     # Step 3: Split data into training and test sets
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.6, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.65, random_state=42)
 
     # Step 4: Train a Multinomial Naive Bayes classifier
     classifier = MultinomialNB()
@@ -108,7 +108,7 @@ def label_confusionMatrix():
     y_pred = classifier.predict(X_test)
 
     # Step 6: Create a confusion matrix
-    cm = confusion_matrix(y_test, y_pred)
+    cm = confusion_matrix(y_test, y_pred, normalize='all')
 
     # Step 7: Display the confusion matrix using a heatmap
     labels = ['Personal', 'Public', 'School']
@@ -120,3 +120,4 @@ def label_confusionMatrix():
     plt.show()
 
 threat_confusionMatrix()
+label_confusionMatrix()
