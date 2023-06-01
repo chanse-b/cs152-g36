@@ -30,6 +30,7 @@ with open(token_path) as f:
     # Use all of the data
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=1, random_state=42)
     # Train a Multinomial Naive Bayes classifier
+    print("Training Naive Bayes classifier...")
     classifier = MultinomialNB()
     classifier.fit(X_train, y_train)
 
