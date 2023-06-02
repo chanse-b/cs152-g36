@@ -123,5 +123,4 @@ def label_confusionMatrix():
     plt.title('Confusion Matrix for Threat Type')
     plt.show()
 
-threat_confusionMatrix()
-label_confusionMatrix()
+

@@ -98,15 +98,25 @@ class ModBot(discord.Client):
             await self.report_channel.send("This message has been edited. Consider viewing the user's history")
             await self.report_channel.send(self.code_format(scores))
             await self.report_channel.send("-----------------------------------")
+            if message.author.name not in self.blacklist:
+                self.blacklist[message.author.name] = 0
+            self.blacklist[message.author.name] += 1
+            if self.blacklist[message.author.name] >= 4:
+                await self.report_channel.send("```" + message.author.name + "```" + "has been reported " + str(self.blacklist[message.author.name]) + " times, consider banning")
         elif decoded_scores[0] > .5:
             await self.report_channel.send("-----------------------------------")
             await self.report_channel.send(f'Forwarded message:\n{message.author.name}: "{message.content}"')
             await self.report_channel.send("The message was encoded. Decoded as: " + str(decode.unidecode(message.content)))
             await self.report_channel.send(f'Forwarded message:\n{message.author.name}: "{decode(message.content)}"')
-            await self.report_channel.send("Translated message from detectected language:" + GoogleTranslate(source='auto', target='english').translate(message.content))
+            await self.report_channel.send("Translated message from detectected language:" + GoogleTranslate(source='auto', target='english').translate(decode.unidecode(message.content)))
             await self.report_channel.send("This message has been edited. Consider viewing the user's history")
             await self.report_channel.send(self.code_format(scores))
             await self.report_channel.send("-----------------------------------")
+            if message.author.name not in self.blacklist:
+                self.blacklist[message.author.name] = 0
+            self.blacklist[message.author.name] += 1
+            if self.blacklist[message.author.name] >= 4:
+                await self.report_channel.send("```" + message.author.name + "```" + "has been reported " + str(self.blacklist[message.author.name]) + " times, consider banning")
         elif scores == -1: # message could not be scanned, send to manual review
             await self.report_channel.send( "Consider viewing " + '`' + message.author.name + '`' + "'s history, message " +  '`'+message.content +'`' " could not be scanned")
                 
@@ -255,13 +265,23 @@ class ModBot(discord.Client):
                 await mod_channel.send("Translated message from detectected language:" + GoogleTranslate(source='auto', target='english').translate(message.content))
                 await mod_channel.send(self.code_format(scores))
                 await self.report_channel.send("-----------------------------------")
+                if message.author.name not in self.blacklist:
+                    self.blacklist[message.author.name] = 0
+                self.blacklist[message.author.name] += 1
+                if self.blacklist[message.author.name] >= 4:
+                    await self.report_channel.send("```" + message.author.name + "```" + "has been reported " + str(self.blacklist[message.author.name]) + " times, consider banning")
             elif decoded_scores[0] > .5:
                 await self.report_channel.send("-----------------------------------")
                 await self.report_channel.send("This is the threat specialist channel. use the command 'forward to authorities' to contact the local authorities")
                 await mod_channel.send(f'Forwarded decoded message:\n{message.author.name}: "{decode.unidecode(message.content)}"')
-                await mod_channel.send("Translated message from detectected language:" + GoogleTranslate(source='auto', target='english').translate(message.content))
+                await mod_channel.send("Translated message from detectected language:" + GoogleTranslate(source='auto', target='english').translate(decode.unidecode(message.content)))
                 await mod_channel.send(self.code_format(decoded_scores))
                 await self.report_channel.send("-----------------------------------")
+                if message.author.name not in self.blacklist:
+                    self.blacklist[message.author.name] = 0
+                self.blacklist[message.author.name] += 1
+                if self.blacklist[message.author.name] >= 4:
+                    await self.report_channel.send("```" + message.author.name + "```" + "has been reported " + str(self.blacklist[message.author.name]) + " times, consider banning")
             elif scores[0] == -1 or decoded_scores[0] == -1:
                 await self.report_channel.send( "Consider viewing " + '`' + message.author.name + '`' + "'s history, message could not be scanned")
     
