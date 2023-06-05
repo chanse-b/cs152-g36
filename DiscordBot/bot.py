@@ -259,7 +259,7 @@ class ModBot(discord.Client):
         # MODIFY TO SEND FLAGGED OR REPORTED MESSAGES ONLY 
         elif message.channel.name == f'group-{self.group_num}':
             scores = self.eval_text(message.content)
-            decoded_scores = self.eval_text(decode.unidecode(message.content))
+            decoded_scores = self.eval_text(decode.unidecode(str(message.content)))
             if scores[0] > .5:
                 await self.report_channel.send("-----------------------------------")
                 await self.report_channel.send("This is the threat specialist channel. use the command 'forward to authorities' to contact the local authorities")
